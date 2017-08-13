@@ -1,29 +1,51 @@
 {
-  "name": "dt_watch0",
-  "author": "MakeAwesomeHappen",
-  "version": "1.0.0",
-  "keywords": ["pebble-app"],
-  "private": true,
-  "dependencies": {},
-  "pebble": {
-    "displayName": "dt_watch0",
-    "uuid": "6eb69373-73bb-45df-bb72-b4f02680546c",
-    "sdkVersion": "3",
-    "enableMultiJS": true,
-    "targetPlatforms": [
-      "aplite",
-      "basalt",
-      "chalk",
-      "diorite"
+    "name": "dt_watch0",
+    "author": "demetulth",
+    "version": "1.0.0",
+    "keywords": [
+        "pebble-app"
     ],
-    "watchapp": {
-      "watchface": false
+    "private": true,
+    "dependencies": {
+        "pebble-clay": "^1.0.4"
     },
-    "messageKeys": [
-      "dummy"
-    ],
-    "resources": {
-      "media": []
+    "pebble": {
+        "displayName": "dt_watch0",
+        "uuid": "6eb69373-73bb-45df-bb72-b4f02680546c",
+        "sdkVersion": "3",
+        "enableMultiJS": true,
+        "targetPlatforms": [
+            "basalt"
+        ],
+        "watchapp": {
+            "watchface": true
+        },
+        "capabilities": [
+            "configurable",
+            "location"
+        ],
+        "messageKeys": [
+            "TimeFontColor",
+            "DateFontColor",
+            "TimeDateBackgroundColor",
+            "InfoBackgroundColor",
+            "DateStrftimeStr"
+        ],
+        "resources": {
+            "media": [
+                {
+                    "type": "font",
+                    "characterRegex": "[ -~]",
+                    "name": "LECO_FONT_25",
+                    "file": "fonts/LECO1976-Narrow.ttf"
+                },
+                {
+                    "type": "font",
+                    "characterRegex": "[0-9:A-Za-z ]",
+                    "name": "LECO_FONT_53",
+                    "file": "fonts/LECO1976-Narrow.ttf"
+                }
+            ]
+        }
     }
-  }
 }
