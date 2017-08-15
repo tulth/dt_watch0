@@ -12,33 +12,39 @@ module.exports = [
       },
       {
         "type": "color",
-        "messageKey": "TimeFontColor",
+        "messageKey": "PrefTimeFontColor",
         "defaultValue": "0x000000",
         "label": "Time font color"
       },
       {
         "type": "color",
-        "messageKey": "DateFontColor",
+        "messageKey": "PrefDateFontColor",
         "defaultValue": "0x000000",
         "label": "Date font color"
       },
       {
         "type": "color",
-        "messageKey": "TimeDateBackgroundColor",
+        "messageKey": "PrefTimeDateBackgroundColor",
         "defaultValue": "0xFFFFFF",
         "label": "Time/Date background color"
       },
       {
         "type": "color",
-        "messageKey": "InfoBackgroundColor",
+        "messageKey": "PrefInfoBackgroundColor",
         "defaultValue": "0xFFFFFF",
         "label": "Info section background color"
       },
       {
         "type": "input",
-        "messageKey": "DateStrftimeStr",
+        "messageKey": "PrefDateStrftimeStr",
         "defaultValue": "%a %d%b",
         "label": "Date strftime string"
+      },
+      {
+        "type": "input",
+        "messageKey": "weather_apikey",
+        "defaultValue": "",
+        "label": "Weather underground API key"
       }
     ]
   },
