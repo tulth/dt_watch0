@@ -23,12 +23,12 @@ typedef struct ClaySettings {
   char DateStrftimeStr[DATE_STRFTIME_LEN];
 } ClaySettings;
 
-typedef struct WeatherSettings {
+typedef struct WeatherState {
   time_t timestamp;
   int weather_icon_id[3];
   char weather_time_buffer[3][5];
   char weather_temp_buffer[3][5];
-} WeatherSettings;
+} WeatherState;
 
 // windows
 static Window *s_window;
@@ -93,7 +93,7 @@ static GBitmap *weather_unknown_bitmap;
 static ClaySettings settings;
 static char s_time_buffer[TIME_STR_LEN];
 static char s_date_buffer[DATE_STR_LEN];
-static WeatherSettings s_weather;
+static WeatherState s_weather_state;
 
 
 static bool s_fetched_initial_weather = false;
@@ -186,29 +186,29 @@ GBitmap *map_weather_id_to_bitmap(int fct) {
   }
 }
 
-static void update_weather(void) {
-    bitmap_layer_set_bitmap(s_weather0_bitmap_layer, map_weather_id_to_bitmap(s_weather.weather_icon_id[0]));
-    bitmap_layer_set_bitmap(s_weather1_bitmap_layer, map_weather_id_to_bitmap(s_weather.weather_icon_id[1]));
-    bitmap_layer_set_bitmap(s_weather2_bitmap_layer, map_weather_id_to_bitmap(s_weather.weather_icon_id[2]));
-    text_layer_set_text(s_weather0_time_text_layer, s_weather.weather_time_buffer[0]);
-    text_layer_set_text(s_weather1_time_text_layer, s_weather.weather_time_buffer[1]);
-    text_layer_set_text(s_weather2_time_text_layer, s_weather.weather_time_buffer[2]);
-    text_layer_set_text(s_weather0_temp_text_layer, s_weather.weather_temp_buffer[0]);
-    text_layer_set_text(s_weather1_temp_text_layer, s_weather.weather_temp_buffer[1]);
-    text_layer_set_text(s_weather2_temp_text_layer, s_weather.weather_temp_buffer[2]);
+static void display_weather_state(void) {
+    bitmap_layer_set_bitmap(s_weather0_bitmap_layer, map_weather_id_to_bitmap(s_weather_state.weather_icon_id[0]));
+    bitmap_layer_set_bitmap(s_weather1_bitmap_layer, map_weather_id_to_bitmap(s_weather_state.weather_icon_id[1]));
+    bitmap_layer_set_bitmap(s_weather2_bitmap_layer, map_weather_id_to_bitmap(s_weather_state.weather_icon_id[2]));
+    text_layer_set_text(s_weather0_time_text_layer, s_weather_state.weather_time_buffer[0]);
+    text_layer_set_text(s_weather1_time_text_layer, s_weather_state.weather_time_buffer[1]);
+    text_layer_set_text(s_weather2_time_text_layer, s_weather_state.weather_time_buffer[2]);
+    text_layer_set_text(s_weather0_temp_text_layer, s_weather_state.weather_temp_buffer[0]);
+    text_layer_set_text(s_weather1_temp_text_layer, s_weather_state.weather_temp_buffer[1]);
+    text_layer_set_text(s_weather2_temp_text_layer, s_weather_state.weather_temp_buffer[2]);
 }
 
 static void fetch_weather(void) {
   DictionaryIterator *out_iter;
   AppMessageResult result = app_message_outbox_begin(&out_iter);
-  // APP_LOG(// APP_LOG_LEVEL_DEBUG, "fetch_weather");
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "fetch_weather");
   
   if(result == APP_MSG_OK) {
     // Construct the message
     dict_write_uint8(out_iter, MESSAGE_KEY_FetchWeather, 1);
   } else {
     // The outbox cannot be used right now
-    // APP_LOG(// APP_LOG_LEVEL_ERROR, "Error preparing the outbox: %d", (int)result);
+    APP_LOG(APP_LOG_LEVEL_ERROR, "Error preparing the outbox: %d", (int)result);
   }
 
   // Send this message
@@ -216,17 +216,31 @@ static void fetch_weather(void) {
 
   // Check the result
   if(result != APP_MSG_OK) {
-    // APP_LOG(// APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
+    // APP_LOG(APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
   }  
 }
 
+
+static void set_default_weather_state(void) {
+  int idx;
+  s_weather_state.timestamp = 0;
+  for (idx=0; idx < 3; idx++) {
+    s_weather_state.weather_icon_id[idx] = 39;
+    strncpy(s_weather_state.weather_time_buffer[idx], "TBD\0", sizeof(s_weather_state.weather_time_buffer[idx]));
+    strncpy(s_weather_state.weather_temp_buffer[idx], "TBD\0", sizeof(s_weather_state.weather_temp_buffer[idx]));
+  }
+  
+}
+
+#define timestamp_age(timestamp) ((time(NULL) - timestamp))
+  
 static void safe_fetch_weather(void) {
-  // APP_LOG(// APP_LOG_LEVEL_DEBUG, "safe_fetch_weather");
-  if ((time(NULL) - s_weather.timestamp) < 15 * SECONDS_PER_MINUTE) {
-    // if ((time(NULL) - s_weather.timestamp) < 10) {
-    // APP_LOG(// APP_LOG_LEVEL_DEBUG, "using old data");
-    // APP_LOG(// APP_LOG_LEVEL_DEBUG, "%d %d ", time(NULL), s_weather.timestamp);
-    update_weather();
+  // APP_LOG(APP_LOG_LEVEL_DEBUG, "safe_fetch_weather");
+  if (timestamp_age(s_weather_state.timestamp) < 15 * SECONDS_PER_MINUTE) {
+    // if ((time(NULL) - s_weather_state.timestamp) < 10) {
+    // APP_LOG(APP_LOG_LEVEL_DEBUG, "using old data");
+    // APP_LOG(APP_LOG_LEVEL_DEBUG, "%d %d ", time(NULL), s_weather_state.timestamp);
+    display_weather_state();
     return;
   }
   fetch_weather();
@@ -423,7 +437,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void inbox_received_handler(DictionaryIterator *iter, void *context) {
-  // APP_LOG(// APP_LOG_LEVEL_DEBUG, "inbox_received_handler!");
+  // APP_LOG(APP_LOG_LEVEL_DEBUG, "inbox_received_handler!");
   bool settings_updated = false;
   bool weather_updated = false;
   int idx;
@@ -476,10 +490,10 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
     Tuple *response_weather_icon_t = dict_find(iter, MESSAGE_KEY_ResponseWeatherIcons + idx);
     if(response_weather_icon_t) {
       if (idx == 0) {
-        s_weather.timestamp = time(NULL);
+        s_weather_state.timestamp = time(NULL);
         s_fetched_initial_weather = true;
       }
-      s_weather.weather_icon_id[idx] = response_weather_icon_t->value->int32;
+      s_weather_state.weather_icon_id[idx] = response_weather_icon_t->value->int32;
       weather_updated = true;
     }
   }
@@ -488,7 +502,7 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   for (idx = 0; idx < 3; idx++) {
     Tuple *response_weather_time_str_t = dict_find(iter, MESSAGE_KEY_ResponseWeatherTimeStrs + idx);
     if(response_weather_time_str_t) {
-      strncpy(s_weather.weather_time_buffer[idx], response_weather_time_str_t->value->cstring, sizeof(s_weather.weather_time_buffer[idx]));
+      strncpy(s_weather_state.weather_time_buffer[idx], response_weather_time_str_t->value->cstring, sizeof(s_weather_state.weather_time_buffer[idx]));
       weather_updated = true;
     }
   }
@@ -497,13 +511,13 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   for (idx = 0; idx < 3; idx++) {
     Tuple *response_weather_temp_str_t = dict_find(iter, MESSAGE_KEY_ResponseWeatherTempStrs + idx);
     if(response_weather_temp_str_t) {
-      strncpy(s_weather.weather_temp_buffer[idx], response_weather_temp_str_t->value->cstring, sizeof(s_weather.weather_temp_buffer[idx]));
+      strncpy(s_weather_state.weather_temp_buffer[idx], response_weather_temp_str_t->value->cstring, sizeof(s_weather_state.weather_temp_buffer[idx]));
       weather_updated = true;
     }
   }
   
   if (weather_updated) {
-    update_weather();
+    display_weather_state();
   }
 }
 
@@ -518,19 +532,13 @@ static void prv_init(void) {
   settings.InfoBackgroundColor = GColorDarkGray;
   strncpy(settings.DateStrftimeStr, "%a %d%b", sizeof(settings.DateStrftimeStr));
   persist_read_data(SETTINGS_KEY, &settings, sizeof(settings));
-  s_weather.timestamp = 0;
+  s_weather_state.timestamp = 0;
   
-  for (idx=0; idx < 3; idx++) {
-    s_weather.weather_icon_id[idx] = 39;
+  persist_read_data(WEATHER_KEY, &s_weather_state, sizeof(s_weather_state));
+  if (timestamp_age(s_weather_state.timestamp) > 45 * SECONDS_PER_MINUTE) {
+    set_default_weather_state();
   }
-  /* s_weather.weather0_time_buffer = "TBD\0"; */
-  /* s_weather.weather1_time_buffer = "TBD\0"; */
-  /* s_weather.weather2_time_buffer = "TBD\0"; */
-  /* s_weather.weather0_temp_buffer = "TBD\0"; */
-  /* s_weather.weather1_temp_buffer = "TBD\0"; */
-  /* s_weather.weather2_temp_buffer = "TBD\0"; */
-  persist_read_data(WEATHER_KEY, &s_weather, sizeof(s_weather));
-  
+
   // message_init() AppMessage connection
   app_message_register_inbox_received(inbox_received_handler);
   app_message_open(256, 128);
@@ -595,12 +603,13 @@ static void prv_init(void) {
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
   //tick_timer_service_subscribe(SECOND_UNIT, tick_handler);  
   apply_settings();
+  display_weather_state();
 }
 
 // Save the settings to persistent storage
 static void save_settings() {
   persist_write_data(SETTINGS_KEY, &settings, sizeof(settings));
-  persist_write_data(WEATHER_KEY, &s_weather, sizeof(s_weather));
+  persist_write_data(WEATHER_KEY, &s_weather_state, sizeof(s_weather_state));
 }
 
 static void prv_deinit(void) {
@@ -611,7 +620,7 @@ static void prv_deinit(void) {
 int main(void) {
   prv_init();
 
-  // APP_LOG(// APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", s_window);
+  // APP_LOG(APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", s_window);
 
   app_event_loop();
   prv_deinit();
