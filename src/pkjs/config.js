@@ -24,6 +24,12 @@ module.exports = [
       },
       {
         "type": "color",
+        "messageKey": "PrefWeatherFontColor",
+        "defaultValue": "0x000000",
+        "label": "Weather forecast area font color"
+      },
+      {
+        "type": "color",
         "messageKey": "PrefTimeDateBackgroundColor",
         "defaultValue": "0xFFFFFF",
         "label": "Time/Date background color"

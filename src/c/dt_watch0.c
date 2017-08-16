@@ -19,6 +19,7 @@
 typedef struct ClaySettings {
   GColor TimeFontColor;
   GColor DateFontColor;
+  GColor WeatherFontColor;
   GColor TimeDateBackgroundColor;
   GColor ForecastBackgroundColor;
   char DateStrftimeStr[DATE_STRFTIME_LEN];
@@ -375,6 +376,8 @@ static void apply_settings(void) {
   for (idx=0; idx < 3; idx++) {
     text_layer_set_background_color(s_weather_time_text_layer[idx], settings.ForecastBackgroundColor);
     text_layer_set_background_color(s_weather_temp_text_layer[idx], settings.ForecastBackgroundColor);
+    text_layer_set_text_color(s_weather_time_text_layer[idx], settings.WeatherFontColor);
+    text_layer_set_text_color(s_weather_temp_text_layer[idx], settings.WeatherFontColor);
   }
   update_date(now());
 }
@@ -417,6 +420,12 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *date_font_color_t = dict_find(iter, MESSAGE_KEY_PrefDateFontColor);
   if(date_font_color_t) {
     settings.DateFontColor = GColorFromHEX(date_font_color_t->value->int32);
+    settings_updated = true;
+  }
+
+  Tuple *weather_font_color_t = dict_find(iter, MESSAGE_KEY_PrefWeatherFontColor);
+  if(weather_font_color_t) {
+    settings.WeatherFontColor = GColorFromHEX(weather_font_color_t->value->int32);
     settings_updated = true;
   }
 
@@ -483,6 +492,7 @@ static void prv_init(void) {
   // settings_init()
   settings.TimeFontColor = GColorWhite;
   settings.DateFontColor = GColorWhite;
+  settings.WeatherFontColor = GColorWhite;
   settings.TimeDateBackgroundColor = GColorBlack;
   settings.ForecastBackgroundColor = GColorBlack;
   settings.ForecastBackgroundColor = GColorDarkGray;

@@ -29,6 +29,7 @@
             "JSReady",
             "PrefTimeFontColor",
             "PrefDateFontColor",
+            "PrefWeatherFontColor",
             "PrefTimeDateBackgroundColor",
             "PrefForecastBackgroundColor",
             "PrefDateStrftimeStr",
