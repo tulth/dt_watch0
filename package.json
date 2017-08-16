@@ -7,6 +7,7 @@
     ],
     "private": true,
     "dependencies": {
+        "pebble-battery-bar": "^1.0.10",
         "pebble-clay": "^1.0.4"
     },
     "pebble": {

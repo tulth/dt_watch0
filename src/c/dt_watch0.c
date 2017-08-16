@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <pebble.h>
 #include <pebble_fonts.h>
+#include <pebble-battery-bar/pebble-battery-bar.h>
 
 // Settings
 #define SETTINGS_KEY 1
@@ -39,6 +40,7 @@ static TextLayer *s_forecast_text_layer;
 static TextLayer *s_weather_time_text_layer[3];
 static TextLayer *s_weather_temp_text_layer[3];
 static BitmapLayer *s_weather_bitmap_layer[3];
+static BatteryBarLayer *s_battery_layer;
 // Resources
 static GFont leco_16;
 static GFont leco_25;
@@ -247,20 +249,26 @@ static void prv_window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   //GRect bounds = layer_get_unobstructed_bounds(window_layer);
   GRect bounds = layer_get_bounds(window_layer);
-  
+
+  // time
   s_time_text_layer = text_layer_create(GRect(0, 0, bounds.size.w, TIME_TEXT_LAYER_HEIGHT));
   text_layer_set_font(s_time_text_layer, leco_53);
   text_layer_set_text(s_time_text_layer, s_time_buffer);
   text_layer_set_text_alignment(s_time_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_time_text_layer));
 
+  // battery bar, added after time so time does not mask it
+  s_battery_layer = battery_bar_layer_create();
+  layer_add_child(window_layer, s_battery_layer);
+  
+  // date
   s_date_text_layer = text_layer_create(GRect(0, TIME_TEXT_LAYER_HEIGHT, bounds.size.w, DATE_TEXT_LAYER_HEIGHT));
   text_layer_set_font(s_date_text_layer, leco_25);
   text_layer_set_text(s_date_text_layer, s_date_buffer);
   text_layer_set_text_alignment(s_date_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_date_text_layer));
 
-  
+  // forecast
   s_forecast_text_layer = text_layer_create(GRect(0,
                                               FORECAST_LAYER_YSTART,
                                               bounds.size.w,
@@ -300,6 +308,7 @@ static void prv_window_load(Window *window) {
 }
 
 static void prv_window_unload(Window *window) {
+  battery_bar_layer_destroy(s_battery_layer);
   text_layer_destroy(s_time_text_layer);
   text_layer_destroy(s_date_text_layer);
   text_layer_destroy(s_forecast_text_layer);
