@@ -36,15 +36,9 @@ static Window *s_window;
 static TextLayer *s_time_text_layer;
 static TextLayer *s_date_text_layer;
 static TextLayer *s_info_text_layer;
-static TextLayer *s_weather0_time_text_layer;
-static TextLayer *s_weather1_time_text_layer;
-static TextLayer *s_weather2_time_text_layer;
-static TextLayer *s_weather0_temp_text_layer;
-static TextLayer *s_weather1_temp_text_layer;
-static TextLayer *s_weather2_temp_text_layer;
-static BitmapLayer *s_weather0_bitmap_layer;
-static BitmapLayer *s_weather1_bitmap_layer;
-static BitmapLayer *s_weather2_bitmap_layer;
+static TextLayer *s_weather_time_text_layer[3];
+static TextLayer *s_weather_temp_text_layer[3];
+static BitmapLayer *s_weather_bitmap_layer[3];
 // Resources
 static GFont leco_16;
 static GFont leco_25;
@@ -187,15 +181,13 @@ GBitmap *map_weather_id_to_bitmap(int fct) {
 }
 
 static void display_weather_state(void) {
-    bitmap_layer_set_bitmap(s_weather0_bitmap_layer, map_weather_id_to_bitmap(s_weather_state.weather_icon_id[0]));
-    bitmap_layer_set_bitmap(s_weather1_bitmap_layer, map_weather_id_to_bitmap(s_weather_state.weather_icon_id[1]));
-    bitmap_layer_set_bitmap(s_weather2_bitmap_layer, map_weather_id_to_bitmap(s_weather_state.weather_icon_id[2]));
-    text_layer_set_text(s_weather0_time_text_layer, s_weather_state.weather_time_buffer[0]);
-    text_layer_set_text(s_weather1_time_text_layer, s_weather_state.weather_time_buffer[1]);
-    text_layer_set_text(s_weather2_time_text_layer, s_weather_state.weather_time_buffer[2]);
-    text_layer_set_text(s_weather0_temp_text_layer, s_weather_state.weather_temp_buffer[0]);
-    text_layer_set_text(s_weather1_temp_text_layer, s_weather_state.weather_temp_buffer[1]);
-    text_layer_set_text(s_weather2_temp_text_layer, s_weather_state.weather_temp_buffer[2]);
+  int idx;
+  for (idx=0; idx < 3; idx++) {
+    text_layer_set_text(s_weather_time_text_layer[idx], s_weather_state.weather_time_buffer[idx]);
+    text_layer_set_text(s_weather_temp_text_layer[idx], s_weather_state.weather_temp_buffer[idx]);
+    bitmap_layer_set_bitmap(s_weather_bitmap_layer[idx],
+                            map_weather_id_to_bitmap(s_weather_state.weather_icon_id[idx]));
+  }
 }
 
 static void fetch_weather(void) {
@@ -273,95 +265,46 @@ static void prv_window_load(Window *window) {
   text_layer_set_text_alignment(s_info_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_info_text_layer));
 
-  // weather times
+  int idx;
   int weather_time_ystart = LECO_53_HEIGHT + LECO_25_HEIGHT + 6;
-  s_weather0_time_text_layer = text_layer_create(GRect(0,
-                                                       weather_time_ystart,
-                                                       48,
-                                                       LECO_16_HEIGHT));
-  text_layer_set_text_alignment(s_weather0_time_text_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_weather0_time_text_layer, leco_16);
-  layer_add_child(window_layer, text_layer_get_layer(s_weather0_time_text_layer));
-
-  s_weather1_time_text_layer = text_layer_create(GRect(48-1,
-                                                       weather_time_ystart,
-                                                       48,
-                                                       LECO_16_HEIGHT));
-  text_layer_set_text_alignment(s_weather1_time_text_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_weather1_time_text_layer, leco_16);
-  layer_add_child(window_layer, text_layer_get_layer(s_weather1_time_text_layer));
-
-  s_weather2_time_text_layer = text_layer_create(GRect(2 * 48 - 1 ,
-                                                       weather_time_ystart,
-                                                       48,
-                                                       LECO_16_HEIGHT));
-  text_layer_set_text_alignment(s_weather2_time_text_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_weather2_time_text_layer, leco_16);
-  layer_add_child(window_layer, text_layer_get_layer(s_weather2_time_text_layer));
-  
-  // weather temps
   int weather_temp_ystart = bounds.size.h - LECO_16_HEIGHT - 6;
-  s_weather0_temp_text_layer = text_layer_create(GRect(0,
-                                                  weather_temp_ystart,
-                                                  48,
-                                                  LECO_16_HEIGHT));
-  text_layer_set_text_alignment(s_weather0_temp_text_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_weather0_temp_text_layer, leco_16);
-  layer_add_child(window_layer, text_layer_get_layer(s_weather0_temp_text_layer));
-
-  s_weather1_temp_text_layer = text_layer_create(GRect(48-1,
-                                                  weather_temp_ystart,
-                                                  48,
-                                                  LECO_16_HEIGHT));
-  text_layer_set_text_alignment(s_weather1_temp_text_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_weather1_temp_text_layer, leco_16);
-  layer_add_child(window_layer, text_layer_get_layer(s_weather1_temp_text_layer));
-
-  s_weather2_temp_text_layer = text_layer_create(GRect(2 * 48 - 1 ,
-                                                  weather_temp_ystart,
-                                                  48,
-                                                  LECO_16_HEIGHT));
-  text_layer_set_text_alignment(s_weather2_temp_text_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_weather2_temp_text_layer, leco_16);
-  layer_add_child(window_layer, text_layer_get_layer(s_weather2_temp_text_layer));
-  
-  // weather bitmaps
-  s_weather0_bitmap_layer = bitmap_layer_create(GRect(0,
-                                                     LECO_53_HEIGHT + LECO_25_HEIGHT + 4,
-                                                     48,
-                                                     bounds.size.h-(LECO_53_HEIGHT + LECO_25_HEIGHT + 4)));
-  bitmap_layer_set_compositing_mode(s_weather0_bitmap_layer, GCompOpSet);
-  layer_add_child(window_layer, bitmap_layer_get_layer(s_weather0_bitmap_layer));
-
-  s_weather1_bitmap_layer = bitmap_layer_create(GRect(48-1,
-                                                     LECO_53_HEIGHT + LECO_25_HEIGHT + 4,
-                                                     48,
-                                                     bounds.size.h-(LECO_53_HEIGHT + LECO_25_HEIGHT + 4)));
-  bitmap_layer_set_compositing_mode(s_weather1_bitmap_layer, GCompOpSet);
-  layer_add_child(window_layer, bitmap_layer_get_layer(s_weather1_bitmap_layer));
-
-  s_weather2_bitmap_layer = bitmap_layer_create(GRect(2 * 48 - 1 ,
-                                                     LECO_53_HEIGHT + LECO_25_HEIGHT + 4,
-                                                     48,
-                                                     bounds.size.h-(LECO_53_HEIGHT + LECO_25_HEIGHT + 4)));
-  bitmap_layer_set_compositing_mode(s_weather2_bitmap_layer, GCompOpSet);
-  layer_add_child(window_layer, bitmap_layer_get_layer(s_weather2_bitmap_layer));
-
+  for (idx=0; idx < 3; idx++) {
+    // weather times
+    s_weather_time_text_layer[idx] = text_layer_create(GRect(idx * 48,
+                                                             weather_time_ystart,
+                                                             48,
+                                                             LECO_16_HEIGHT));
+    text_layer_set_text_alignment(s_weather_time_text_layer[idx], GTextAlignmentCenter);
+    text_layer_set_font(s_weather_time_text_layer[idx], leco_16);
+    layer_add_child(window_layer, text_layer_get_layer(s_weather_time_text_layer[idx]));
+    // weather temps
+    s_weather_temp_text_layer[idx] = text_layer_create(GRect(idx * 48,
+                                                             weather_temp_ystart,
+                                                             48,
+                                                             LECO_16_HEIGHT));
+    text_layer_set_text_alignment(s_weather_temp_text_layer[idx], GTextAlignmentCenter);
+    text_layer_set_font(s_weather_temp_text_layer[idx], leco_16);
+    layer_add_child(window_layer, text_layer_get_layer(s_weather_temp_text_layer[idx]));
+    // weather bitmaps
+    s_weather_bitmap_layer[idx] = bitmap_layer_create(GRect(idx * 48,
+                                                            LECO_53_HEIGHT + LECO_25_HEIGHT + 4,
+                                                            48,
+                                                            bounds.size.h-(LECO_53_HEIGHT + LECO_25_HEIGHT + 4)));
+    bitmap_layer_set_compositing_mode(s_weather_bitmap_layer[idx], GCompOpSet);
+    layer_add_child(window_layer, bitmap_layer_get_layer(s_weather_bitmap_layer[idx]));
+  }
 }
 
 static void prv_window_unload(Window *window) {
   text_layer_destroy(s_time_text_layer);
   text_layer_destroy(s_date_text_layer);
   text_layer_destroy(s_info_text_layer);
-  text_layer_destroy(s_weather0_time_text_layer);
-  text_layer_destroy(s_weather1_time_text_layer);
-  text_layer_destroy(s_weather2_time_text_layer);
-  text_layer_destroy(s_weather0_temp_text_layer);
-  text_layer_destroy(s_weather1_temp_text_layer);
-  text_layer_destroy(s_weather2_temp_text_layer);
-  bitmap_layer_destroy(s_weather0_bitmap_layer);
-  bitmap_layer_destroy(s_weather1_bitmap_layer);
-  bitmap_layer_destroy(s_weather2_bitmap_layer);
+  int idx;
+  for (idx=0; idx < 3; idx++) {
+    text_layer_destroy(s_weather_time_text_layer[idx]);
+    text_layer_destroy(s_weather_temp_text_layer[idx]);
+    bitmap_layer_destroy(s_weather_bitmap_layer[idx]);
+  }
 }
 
 static void update_time_str(struct tm *tick_time) {
@@ -413,12 +356,11 @@ static void apply_settings(void) {
   text_layer_set_background_color(s_time_text_layer, settings.TimeDateBackgroundColor);
   text_layer_set_background_color(s_date_text_layer, settings.TimeDateBackgroundColor);
   text_layer_set_background_color(s_info_text_layer, settings.InfoBackgroundColor);
-  text_layer_set_background_color(s_weather0_time_text_layer, settings.InfoBackgroundColor);
-  text_layer_set_background_color(s_weather1_time_text_layer, settings.InfoBackgroundColor);
-  text_layer_set_background_color(s_weather2_time_text_layer, settings.InfoBackgroundColor);
-  text_layer_set_background_color(s_weather0_temp_text_layer, settings.InfoBackgroundColor);
-  text_layer_set_background_color(s_weather1_temp_text_layer, settings.InfoBackgroundColor);
-  text_layer_set_background_color(s_weather2_temp_text_layer, settings.InfoBackgroundColor);
+  int idx;
+  for (idx=0; idx < 3; idx++) {
+    text_layer_set_background_color(s_weather_time_text_layer[idx], settings.InfoBackgroundColor);
+    text_layer_set_background_color(s_weather_temp_text_layer[idx], settings.InfoBackgroundColor);
+  }
   update_date(now());
 }
 
@@ -595,9 +537,9 @@ static void prv_init(void) {
   
   s_window = window_create();
   window_set_window_handlers(s_window, (WindowHandlers) {
-    .load = prv_window_load,
-    .unload = prv_window_unload,
-  });
+      .load = prv_window_load,
+        .unload = prv_window_unload,
+        });
   const bool animated = true;
   window_stack_push(s_window, animated);
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
