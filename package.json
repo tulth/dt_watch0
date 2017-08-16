@@ -57,6 +57,12 @@
                     "file": "fonts/LECO1976-Narrow.ttf"
                 },
                 {
+                    "type": "png",
+                    "menuIcon": true,
+                    "name": "MENU_ICON",
+                    "file": "icon/png/menu_icon.png"
+                },
+                {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_chanceflurries",
                     "file": "weather/png/chanceflurries.png"
