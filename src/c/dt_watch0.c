@@ -262,7 +262,7 @@ static void prv_window_load(Window *window) {
   s_battery_layer = battery_bar_layer_create();
   layer_add_child(window_layer, s_battery_layer);
   battery_bar_set_percent_hidden(true);
-  battery_bar_set_position(GPoint(43, 2));
+  battery_bar_set_position(GPoint(41, 2));
   
   // date
   s_date_text_layer = text_layer_create(GRect(0, TIME_TEXT_LAYER_HEIGHT, bounds.size.w, DATE_TEXT_LAYER_HEIGHT));
