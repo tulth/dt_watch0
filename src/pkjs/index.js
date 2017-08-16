@@ -8,6 +8,9 @@ var clay = new Clay(clayConfig, null, { autoHandleEvents: false });
 var weather_hourly_test = require('./weather_example');
 
 var weather_apikey = null;
+var weather_forecast_time0 = 8;
+var weather_forecast_time1 = 18;
+
 var pebble_response = {
     icons: [39, 39, 39],
     times: ["tbd", "tbd", "tbd"],
@@ -38,6 +41,26 @@ function webviewclosed_handler(e) {
             localStorage.removeItem('weather_apikey');
         }
         delete settings_dict.weather_apikey;
+    }
+    if ('weather_forecast_time0' in settings_dict) {
+        weather_forecast_time0 = settings_dict.weather_forecast_time0.value
+        // console.log('weather_forecast_time0: ', weather_forecast_time0);
+        if (weather_forecast_time0 !== null) {
+            localStorage.setItem('weather_forecast_time0', weather_forecast_time0);
+        } else {
+            localStorage.removeItem('weather_forecast_time0');
+        }
+        delete settings_dict.weather_forecast_time0;
+    }
+    if ('weather_forecast_time1' in settings_dict) {
+        weather_forecast_time1 = settings_dict.weather_forecast_time1.value
+        // console.log('weather_forecast_time1: ', weather_forecast_time1);
+        if (weather_forecast_time1 !== null) {
+            localStorage.setItem('weather_forecast_time1', weather_forecast_time1);
+        } else {
+            localStorage.removeItem('weather_forecast_time1');
+        }
+        delete settings_dict.weather_forecast_time1;
     }
     // Send settings values to watch side
     settings_dict = Clay.prepareSettingsForAppMessage(settings_dict);
@@ -190,7 +213,7 @@ function process_weather_and_send_to_pebble(weather_hourly) {
     var temp_strs = []
     weather_hourly.hourly_forecast.forEach(function (hour_forecast, idx, arr) {
         var hour = parseInt(hour_forecast.FCTTIME.hour)
-        if (idx == 0 || hour == 18 || hour == 8) {
+        if (idx == 0 || hour == weather_forecast_time0 || hour == weather_forecast_time1) {
             if (hour > 12) {
                 hour -= 12;
             }
