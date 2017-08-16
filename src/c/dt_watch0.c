@@ -19,7 +19,7 @@ typedef struct ClaySettings {
   GColor TimeFontColor;
   GColor DateFontColor;
   GColor TimeDateBackgroundColor;
-  GColor InfoBackgroundColor;
+  GColor ForecastBackgroundColor;
   char DateStrftimeStr[DATE_STRFTIME_LEN];
 } ClaySettings;
 
@@ -35,7 +35,7 @@ static Window *s_window;
 // Layers
 static TextLayer *s_time_text_layer;
 static TextLayer *s_date_text_layer;
-static TextLayer *s_info_text_layer;
+static TextLayer *s_forecast_text_layer;
 static TextLayer *s_weather_time_text_layer[3];
 static TextLayer *s_weather_temp_text_layer[3];
 static BitmapLayer *s_weather_bitmap_layer[3];
@@ -238,40 +238,44 @@ static void safe_fetch_weather(void) {
   fetch_weather();
 }
 
-
+#define TIME_TEXT_LAYER_HEIGHT (LECO_53_HEIGHT + 6)
+#define DATE_TEXT_LAYER_HEIGHT (LECO_25_HEIGHT + 6)
+#define FORECAST_LAYER_YSTART  (TIME_TEXT_LAYER_HEIGHT + DATE_TEXT_LAYER_HEIGHT)
+#define WEATHER_TIME_YSTART    (FORECAST_LAYER_YSTART)
+#define WEATHER_BITMAP_YSTART  (FORECAST_LAYER_YSTART)
 static void prv_window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   //GRect bounds = layer_get_unobstructed_bounds(window_layer);
   GRect bounds = layer_get_bounds(window_layer);
   
-  s_time_text_layer = text_layer_create(GRect(0, 0, bounds.size.w, LECO_53_HEIGHT));
+  s_time_text_layer = text_layer_create(GRect(0, 0, bounds.size.w, TIME_TEXT_LAYER_HEIGHT));
   text_layer_set_font(s_time_text_layer, leco_53);
   text_layer_set_text(s_time_text_layer, s_time_buffer);
   text_layer_set_text_alignment(s_time_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_time_text_layer));
 
-  s_date_text_layer = text_layer_create(GRect(0, LECO_53_HEIGHT, bounds.size.w, LECO_25_HEIGHT + 4));
+  s_date_text_layer = text_layer_create(GRect(0, TIME_TEXT_LAYER_HEIGHT, bounds.size.w, DATE_TEXT_LAYER_HEIGHT));
   text_layer_set_font(s_date_text_layer, leco_25);
   text_layer_set_text(s_date_text_layer, s_date_buffer);
   text_layer_set_text_alignment(s_date_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_date_text_layer));
+
   
-  s_info_text_layer = text_layer_create(GRect(0,
-                                              LECO_53_HEIGHT + LECO_25_HEIGHT + 4,
+  s_forecast_text_layer = text_layer_create(GRect(0,
+                                              FORECAST_LAYER_YSTART,
                                               bounds.size.w,
                                               bounds.size.h-(LECO_53_HEIGHT + LECO_25_HEIGHT + 4)));
-  //text_layer_set_font(s_info_text_layer, leco_25);
-  //text_layer_set_text(s_info_text_layer, "INFO!\nFuture\nFeature");
-  text_layer_set_text_alignment(s_info_text_layer, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(s_info_text_layer));
+  //text_layer_set_font(s_forecast_text_layer, leco_25);
+  //text_layer_set_text(s_forecast_text_layer, "FORECAST!\nFuture\nFeature");
+  text_layer_set_text_alignment(s_forecast_text_layer, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(s_forecast_text_layer));
 
   int idx;
-  int weather_time_ystart = LECO_53_HEIGHT + LECO_25_HEIGHT + 6;
-  int weather_temp_ystart = bounds.size.h - LECO_16_HEIGHT - 6;
+  int WEATHER_TEMP_YSTART = bounds.size.h - LECO_16_HEIGHT - 4;
   for (idx=0; idx < 3; idx++) {
     // weather times
     s_weather_time_text_layer[idx] = text_layer_create(GRect(idx * 48,
-                                                             weather_time_ystart,
+                                                             WEATHER_TIME_YSTART,
                                                              48,
                                                              LECO_16_HEIGHT));
     text_layer_set_text_alignment(s_weather_time_text_layer[idx], GTextAlignmentCenter);
@@ -279,7 +283,7 @@ static void prv_window_load(Window *window) {
     layer_add_child(window_layer, text_layer_get_layer(s_weather_time_text_layer[idx]));
     // weather temps
     s_weather_temp_text_layer[idx] = text_layer_create(GRect(idx * 48,
-                                                             weather_temp_ystart,
+                                                             WEATHER_TEMP_YSTART,
                                                              48,
                                                              LECO_16_HEIGHT));
     text_layer_set_text_alignment(s_weather_temp_text_layer[idx], GTextAlignmentCenter);
@@ -287,9 +291,9 @@ static void prv_window_load(Window *window) {
     layer_add_child(window_layer, text_layer_get_layer(s_weather_temp_text_layer[idx]));
     // weather bitmaps
     s_weather_bitmap_layer[idx] = bitmap_layer_create(GRect(idx * 48,
-                                                            LECO_53_HEIGHT + LECO_25_HEIGHT + 4,
+                                                            WEATHER_BITMAP_YSTART,
                                                             48,
-                                                            bounds.size.h-(LECO_53_HEIGHT + LECO_25_HEIGHT + 4)));
+                                                            bounds.size.h-FORECAST_LAYER_YSTART));
     bitmap_layer_set_compositing_mode(s_weather_bitmap_layer[idx], GCompOpSet);
     layer_add_child(window_layer, bitmap_layer_get_layer(s_weather_bitmap_layer[idx]));
   }
@@ -298,7 +302,7 @@ static void prv_window_load(Window *window) {
 static void prv_window_unload(Window *window) {
   text_layer_destroy(s_time_text_layer);
   text_layer_destroy(s_date_text_layer);
-  text_layer_destroy(s_info_text_layer);
+  text_layer_destroy(s_forecast_text_layer);
   int idx;
   for (idx=0; idx < 3; idx++) {
     text_layer_destroy(s_weather_time_text_layer[idx]);
@@ -355,11 +359,11 @@ static void apply_settings(void) {
   text_layer_set_text_color(s_date_text_layer, settings.DateFontColor);
   text_layer_set_background_color(s_time_text_layer, settings.TimeDateBackgroundColor);
   text_layer_set_background_color(s_date_text_layer, settings.TimeDateBackgroundColor);
-  text_layer_set_background_color(s_info_text_layer, settings.InfoBackgroundColor);
+  text_layer_set_background_color(s_forecast_text_layer, settings.ForecastBackgroundColor);
   int idx;
   for (idx=0; idx < 3; idx++) {
-    text_layer_set_background_color(s_weather_time_text_layer[idx], settings.InfoBackgroundColor);
-    text_layer_set_background_color(s_weather_temp_text_layer[idx], settings.InfoBackgroundColor);
+    text_layer_set_background_color(s_weather_time_text_layer[idx], settings.ForecastBackgroundColor);
+    text_layer_set_background_color(s_weather_temp_text_layer[idx], settings.ForecastBackgroundColor);
   }
   update_date(now());
 }
@@ -411,9 +415,9 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
     settings_updated = true;
   }
 
-  Tuple *info_bg_color_t = dict_find(iter, MESSAGE_KEY_PrefInfoBackgroundColor);
-  if(info_bg_color_t) {
-    settings.InfoBackgroundColor = GColorFromHEX(info_bg_color_t->value->int32);
+  Tuple *forecast_bg_color_t = dict_find(iter, MESSAGE_KEY_PrefForecastBackgroundColor);
+  if(forecast_bg_color_t) {
+    settings.ForecastBackgroundColor = GColorFromHEX(forecast_bg_color_t->value->int32);
     settings_updated = true;
   }
 
@@ -465,13 +469,12 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 
 
 static void prv_init(void) {
-  int idx;
   // settings_init()
   settings.TimeFontColor = GColorWhite;
   settings.DateFontColor = GColorWhite;
   settings.TimeDateBackgroundColor = GColorBlack;
-  settings.InfoBackgroundColor = GColorBlack;
-  settings.InfoBackgroundColor = GColorDarkGray;
+  settings.ForecastBackgroundColor = GColorBlack;
+  settings.ForecastBackgroundColor = GColorDarkGray;
   strncpy(settings.DateStrftimeStr, "%a %d%b", sizeof(settings.DateStrftimeStr));
   persist_read_data(SETTINGS_KEY, &settings, sizeof(settings));
   s_weather_state.timestamp = 0;

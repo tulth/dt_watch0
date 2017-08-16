@@ -30,9 +30,9 @@ module.exports = [
       },
       {
         "type": "color",
-        "messageKey": "PrefInfoBackgroundColor",
+        "messageKey": "PrefForecastBackgroundColor",
         "defaultValue": "0xFFFFFF",
-        "label": "Info section background color"
+        "label": "Forecast section background color"
       },
       {
         "type": "input",

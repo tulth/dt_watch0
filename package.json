@@ -29,7 +29,7 @@
             "PrefTimeFontColor",
             "PrefDateFontColor",
             "PrefTimeDateBackgroundColor",
-            "PrefInfoBackgroundColor",
+            "PrefForecastBackgroundColor",
             "PrefDateStrftimeStr",
             "FetchWeather",
             "ResponseWeatherIcons[3]",
