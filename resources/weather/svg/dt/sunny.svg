@@ -1,0 +1,15 @@
+<svg height="100" width="100" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g id="sun">
+    <g id="rays" style="stroke:black;stroke-width:7;stroke-linecap:round">
+      <line x1="5" y1="50" x2="15" y2="50" />
+    </g>
+    <use xlink:href="#rays" transform="rotate(45, 50, 50)"/>
+    <use xlink:href="#rays" transform="rotate(90, 50, 50)"/>
+    <use xlink:href="#rays" transform="rotate(135, 50, 50)"/>
+    <use xlink:href="#rays" transform="rotate(180, 50, 50)"/>
+    <use xlink:href="#rays" transform="rotate(225, 50, 50)"/>
+    <use xlink:href="#rays" transform="rotate(270, 50, 50)"/>
+    <use xlink:href="#rays" transform="rotate(315, 50, 50)"/>
+    <circle cx="50" cy="50" r="25" stroke="black" stroke-width="7" fill="yellow" />
+  </g>
+</svg>

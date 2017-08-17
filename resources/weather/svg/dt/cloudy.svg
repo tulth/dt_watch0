@@ -1,0 +1,12 @@
+<svg height="100" width="100">
+  <g id="cloud">
+    <path d='M 25,37
+             a 20,20 0 0,0 0,40 
+             h 58 
+             a 15,15 0 0,0 0,-30 
+             a 26,26 -10 0,0 -50,-10
+             h -8
+             z'
+          stroke="black" stroke-width="7" fill="white" />
+  </g>
+</svg>

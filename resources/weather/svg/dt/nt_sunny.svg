@@ -1,0 +1,11 @@
+<svg height="100" width="100" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <g id="moon" style="stroke:black;stroke-width:7;stroke-linecap:round;fill:#ffffaa">
+      <path d='M 20,62
+               a 33.5,33.5 0 1,0 35,-47 
+               a 32,32 0 0,1 -35,47 
+               z'/>
+    </g>
+  </defs>
+  <use xlink:href="#moon" />  
+</svg>

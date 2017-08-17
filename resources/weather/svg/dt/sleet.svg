@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg height="100" width="100" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <g id="cloud">
+      <path d='M 25,37
+               a 20,20 0 0,0 0,40 
+               h 58 
+               a 15,15 0 0,0 0,-30 
+               a 26,26 -10 0,0 -50,-10
+               h -8
+               z'
+            stroke="black" fill="lightgray" />
+    </g>
+    <g id="sleet">
+      <path d='M 0,0
+               l 12 23
+               l 9 -13
+               l 14 30
+               l 14 -30
+               l 9 13
+               l 12 -23
+               z'
+            stroke="black" fill="#AAFFFF" />
+    </g>
+    <g id="sleetcloud" >
+      <use xlink:href="#cloud" transform="translate(0 -15)"/>
+      <use xlink:href="#sleet" transform="translate(25 63) scale(0.8)"/>
+    </g> 
+  </defs>
+  <g style="stroke-width:7" >
+    <use xlink:href="#sleetcloud"/>
+  </g>
+</svg>

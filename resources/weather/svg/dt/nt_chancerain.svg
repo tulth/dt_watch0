@@ -1,0 +1,39 @@
+<svg height="100" width="100" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <g id="moon" style="stroke:black;stroke-linecap:round;fill:#ffffaa">
+      <path d='M 20,62
+               a 33.5,33.5 0 1,0 35,-47 
+               a 32,32 0 0,1 -35,47 
+               z'/>
+    </g>
+    <g id="cloud">
+      <path d='M 25,37
+               a 20,20 0 0,0 0,40 
+               h 58 
+               a 15,15 0 0,0 0,-30 
+               a 26,26 -10 0,0 -50,-10
+               h -8
+               z'
+            stroke="black" fill="lightgray" />
+    </g>
+    <g id="raindrop">
+      <line x1="5" y1="0" x2="-3" y2="20" stroke="blue" stroke-linecap="round" />
+      <line x1="3" y1="0" x2="-5" y2="20" stroke="blue" stroke-linecap="round" />
+    </g>
+    <g id="raindrops">
+      <use xlink:href="#raindrop" transform="translate(-15)"/>
+      <use xlink:href="#raindrop" transform="translate(0)"/>
+      <use xlink:href="#raindrop" transform="translate(15)"/>
+    </g>
+    <g id="raincloud">
+      <use xlink:href="#cloud" transform="translate(0 -15)"/>
+      <use xlink:href="#raindrops" transform="translate(0 14) translate(50 50)"/>
+    </g>
+  </defs>
+  <g style="stroke-width:7" >
+    <use xlink:href="#moon" transform="translate(0, -10)" />
+  </g>
+  <g style="stroke-width:9.33333" >
+    <use xlink:href="#raincloud" transform="translate(+10 +20) translate(50 50) scale(0.75) translate(-50 -50) "/>
+  </g>
+</svg>

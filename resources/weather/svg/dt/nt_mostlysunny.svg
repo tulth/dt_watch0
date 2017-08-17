@@ -1,0 +1,26 @@
+<svg height="100" width="100" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <g id="moon" style="stroke:black;stroke-linecap:round;fill:#ffffaa">
+      <path d='M 20,62
+               a 33.5,33.5 0 1,0 35,-47 
+               a 32,32 0 0,1 -35,47 
+               z'/>
+    </g>
+    <g id="cloud">
+      <path d='M 25,37
+               a 20,20 0 0,0 0,40 
+               h 58 
+               a 15,15 0 0,0 0,-30 
+               a 26,26 -10 0,0 -50,-10
+               h -8
+               z'
+            stroke="black" fill="white"/>
+    </g>
+  </defs>
+  <g style="stroke-width:7" >
+    <use xlink:href="#moon" />  
+  </g>
+  <g style="stroke-width:14" >
+    <use xlink:href="#cloud" transform="translate(20 +20) translate(50 50) scale(0.5) translate(-50 -50) "/>
+  </g>
+</svg>

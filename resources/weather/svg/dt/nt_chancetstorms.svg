@@ -1,0 +1,41 @@
+<svg height="100" width="100" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <g id="moon" style="stroke:black;stroke-linecap:round;fill:#ffffaa">
+      <path d='M 20,62
+               a 33.5,33.5 0 1,0 35,-47 
+               a 32,32 0 0,1 -35,47 
+               z'/>
+    </g>
+    <g id="cloud">
+      <path d='M 25,37
+               a 20,20 0 0,0 0,40 
+               h 58 
+               a 15,15 0 0,0 0,-30 
+               a 26,26 -10 0,0 -50,-10
+               h -8
+               z'
+            stroke="black" fill="lightgray" />
+    </g>
+    <g id="lightningbolt">
+      <path d='M 0,55
+               l 35, -34
+               h -9
+               l 5, -13
+               h -25
+               l -11, 26
+               h 11
+               z'
+            stroke="black" fill="yellow" />
+    </g>
+    <g id="stormcloud">
+      <use xlink:href="#cloud" transform="translate(0 -15)"/>
+      <use xlink:href="#lightningbolt" transform="translate(-10 -18) translate(50 50)"/>
+    </g>
+  </defs>
+  <g style="stroke-width:7" >
+    <use xlink:href="#moon" transform="translate(0, -10)" />
+  </g>
+  <g style="stroke-width:9.33333" >
+    <use xlink:href="#stormcloud" transform="translate(+10 +20) translate(50 50) scale(0.75) translate(-50 -50) "/>
+  </g>
+</svg>

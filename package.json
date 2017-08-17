@@ -67,197 +67,197 @@
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_chanceflurries",
-                    "file": "weather/png/chanceflurries.png"
+                    "file": "weather/png/dt/chanceflurries.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_chancerain",
-                    "file": "weather/png/chancerain.png"
+                    "file": "weather/png/dt/chancerain.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_chancesleet",
-                    "file": "weather/png/chancesleet.png"
+                    "file": "weather/png/dt/chancesleet.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_chancesnow",
-                    "file": "weather/png/chancesnow.png"
+                    "file": "weather/png/dt/chancesnow.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_chancetstorms",
-                    "file": "weather/png/chancetstorms.png"
+                    "file": "weather/png/dt/chancetstorms.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_clear",
-                    "file": "weather/png/clear.png"
+                    "file": "weather/png/dt/clear.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_cloudy",
-                    "file": "weather/png/cloudy.png"
+                    "file": "weather/png/dt/cloudy.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_flurries",
-                    "file": "weather/png/flurries.png"
+                    "file": "weather/png/dt/flurries.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_fog",
-                    "file": "weather/png/fog.png"
+                    "file": "weather/png/dt/fog.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_hazy",
-                    "file": "weather/png/hazy.png"
+                    "file": "weather/png/dt/hazy.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_mostlycloudy",
-                    "file": "weather/png/mostlycloudy.png"
+                    "file": "weather/png/dt/mostlycloudy.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_mostlysunny",
-                    "file": "weather/png/mostlysunny.png"
+                    "file": "weather/png/dt/mostlysunny.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_chanceflurries",
-                    "file": "weather/png/nt_chanceflurries.png"
+                    "file": "weather/png/dt/nt_chanceflurries.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_chancerain",
-                    "file": "weather/png/nt_chancerain.png"
+                    "file": "weather/png/dt/nt_chancerain.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_chancesleet",
-                    "file": "weather/png/nt_chancesleet.png"
+                    "file": "weather/png/dt/nt_chancesleet.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_chancesnow",
-                    "file": "weather/png/nt_chancesnow.png"
+                    "file": "weather/png/dt/nt_chancesnow.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_chancetstorms",
-                    "file": "weather/png/nt_chancetstorms.png"
+                    "file": "weather/png/dt/nt_chancetstorms.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_clear",
-                    "file": "weather/png/nt_clear.png"
+                    "file": "weather/png/dt/nt_clear.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_cloudy",
-                    "file": "weather/png/nt_cloudy.png"
+                    "file": "weather/png/dt/nt_cloudy.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_flurries",
-                    "file": "weather/png/nt_flurries.png"
+                    "file": "weather/png/dt/nt_flurries.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_fog",
-                    "file": "weather/png/nt_fog.png"
+                    "file": "weather/png/dt/nt_fog.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_hazy",
-                    "file": "weather/png/nt_hazy.png"
+                    "file": "weather/png/dt/nt_hazy.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_mostlycloudy",
-                    "file": "weather/png/nt_mostlycloudy.png"
+                    "file": "weather/png/dt/nt_mostlycloudy.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_mostlysunny",
-                    "file": "weather/png/nt_mostlysunny.png"
+                    "file": "weather/png/dt/nt_mostlysunny.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_partlycloudy",
-                    "file": "weather/png/nt_partlycloudy.png"
+                    "file": "weather/png/dt/nt_partlycloudy.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_partlysunny",
-                    "file": "weather/png/nt_partlysunny.png"
+                    "file": "weather/png/dt/nt_partlysunny.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_rain",
-                    "file": "weather/png/nt_rain.png"
+                    "file": "weather/png/dt/nt_rain.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_sleet",
-                    "file": "weather/png/nt_sleet.png"
+                    "file": "weather/png/dt/nt_sleet.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_snow",
-                    "file": "weather/png/nt_snow.png"
+                    "file": "weather/png/dt/nt_snow.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_sunny",
-                    "file": "weather/png/nt_sunny.png"
+                    "file": "weather/png/dt/nt_sunny.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_nt_tstorms",
-                    "file": "weather/png/nt_tstorms.png"
+                    "file": "weather/png/dt/nt_tstorms.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_partlycloudy",
-                    "file": "weather/png/partlycloudy.png"
+                    "file": "weather/png/dt/partlycloudy.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_partlysunny",
-                    "file": "weather/png/partlysunny.png"
+                    "file": "weather/png/dt/partlysunny.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_rain",
-                    "file": "weather/png/rain.png"
+                    "file": "weather/png/dt/rain.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_sleet",
-                    "file": "weather/png/sleet.png"
+                    "file": "weather/png/dt/sleet.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_snow",
-                    "file": "weather/png/snow.png"
+                    "file": "weather/png/dt/snow.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_sunny",
-                    "file": "weather/png/sunny.png"
+                    "file": "weather/png/dt/sunny.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_tstorms",
-                    "file": "weather/png/tstorms.png"
+                    "file": "weather/png/dt/tstorms.png"
                 },
                 {
                     "type": "bitmap",
                     "name": "WEATHER_ICON_unknown",
-                    "file": "weather/png/unknown.png"
+                    "file": "weather/png/dt/unknown.png"
                 }
             ]
         }

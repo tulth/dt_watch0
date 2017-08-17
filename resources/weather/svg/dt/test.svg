@@ -1,0 +1,8 @@
+<svg height="1000" width="1000" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <path d="M10,20L40,100L39,200z" stroke="black" stroke-width="2px" fill="none"></path>
+            <text transform="translate(50,240)">normal</text>
+            <path transform="translate(100,0)scale(4,1)" d="M10,20L40,100L39,200z" stroke="black" stroke-width="2px" fill="none"></path>
+            <text transform="translate(240,240)scale(4,1)">scaled</text>
+            <path vector-effect="non-scaling-stroke" transform="translate(300,0)scale(4,1)" d="M10,20L40,100L39,200z" stroke="black" stroke-width="2px" fill="none"></path>
+            <text transform="translate(450,240)">fixed</text>
+          </svg>
