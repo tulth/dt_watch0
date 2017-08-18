@@ -491,11 +491,10 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 static void prv_init(void) {
   // settings_init()
   settings.TimeFontColor = GColorWhite;
-  settings.DateFontColor = GColorWhite;
-  settings.WeatherFontColor = GColorWhite;
-  settings.TimeDateBackgroundColor = GColorBlack;
-  settings.ForecastBackgroundColor = GColorBlack;
-  settings.ForecastBackgroundColor = GColorDarkGray;
+  settings.DateFontColor = GColorLightGray;
+  settings.WeatherFontColor = GColorBlack;
+  settings.TimeDateBackgroundColor = GColorDukeBlue;
+  settings.ForecastBackgroundColor = GColorVividCerulean;
   strncpy(settings.DateStrftimeStr, "%a %d%b", sizeof(settings.DateStrftimeStr));
   persist_read_data(SETTINGS_KEY, &settings, sizeof(settings));
   s_weather_state.timestamp = 0;

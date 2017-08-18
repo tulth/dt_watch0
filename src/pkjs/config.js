@@ -13,13 +13,13 @@ module.exports = [
             {
                 "type": "color",
                 "messageKey": "PrefTimeFontColor",
-                "defaultValue": "0x000000",
+                "defaultValue": "0xffffff",
                 "label": "Time font color"
             },
             {
                 "type": "color",
                 "messageKey": "PrefDateFontColor",
-                "defaultValue": "0x000000",
+                "defaultValue": "0xAAAAAA",
                 "label": "Date font color"
             },
             {
@@ -31,13 +31,13 @@ module.exports = [
             {
                 "type": "color",
                 "messageKey": "PrefTimeDateBackgroundColor",
-                "defaultValue": "0xFFFFFF",
+                "defaultValue": "0x0000AA",
                 "label": "Time/Date background color"
             },
             {
                 "type": "color",
                 "messageKey": "PrefForecastBackgroundColor",
-                "defaultValue": "0xFFFFFF",
+                "defaultValue": "0x00AAFF",
                 "label": "Forecast section background color"
             },
             {
