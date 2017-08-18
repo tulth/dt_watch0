@@ -65,6 +65,12 @@ module.exports = [
                 "label": "Forecast time 1 (use 24-hour time)"
             },
             {
+                "type": "toggle",
+                "messageKey": "weather_forecast_rel_not_abs",
+                "defaultValue": false,
+                "label": "Off=use absolute times for forecasts.  On=Use relative offsets for forecasts."
+            },
+            {
                 "type": "input",
                 "messageKey": "weather_apikey",
                 "defaultValue": "",

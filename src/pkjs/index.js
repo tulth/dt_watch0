@@ -10,6 +10,7 @@ var weather_hourly_test = require('./weather_example');
 var weather_apikey = null;
 var weather_forecast_time0 = 8;
 var weather_forecast_time1 = 18;
+var weather_forecast_rel_not_abs = false;
 
 var pebble_response = {
     icons: [39, 39, 39],
@@ -61,6 +62,16 @@ function webviewclosed_handler(e) {
             localStorage.removeItem('weather_forecast_time1');
         }
         delete settings_dict.weather_forecast_time1;
+    }
+    if ('weather_forecast_rel_not_abs' in settings_dict) {
+        weather_forecast_rel_not_abs = settings_dict.weather_forecast_rel_not_abs.value
+        console.log('weather_forecast_rel_not_abs: ', weather_forecast_rel_not_abs);
+        if (weather_forecast_rel_not_abs !== null) {
+            localStorage.setItem('weather_forecast_rel_not_abs', weather_forecast_rel_not_abs);
+        } else {
+            localStorage.removeItem('weather_forecast_rel_not_abs');
+        }
+        delete settings_dict.weather_forecast_rel_not_abs;
     }
     // Send settings values to watch side
     settings_dict = Clay.prepareSettingsForAppMessage(settings_dict);
@@ -119,6 +130,7 @@ Pebble.addEventListener('ready',
       weather_apikey = localStorage.getItem('weather_apikey');
       weather_forecast_time0 = localStorage.getItem('weather_forecast_time0');
       weather_forecast_time1 = localStorage.getItem('weather_forecast_time1');
+      weather_forecast_rel_not_abs = localStorage.getItem('weather_forecast_rel_not_abs');
       // console.log(e.type);
   }
 );
@@ -213,15 +225,21 @@ function process_weather_and_send_to_pebble(weather_hourly) {
     var time_strs = []
     var icon_ids = []
     var temp_strs = []
+    var search_hour0 = weather_forecast_time0;
+    var search_hour1 = weather_forecast_time1;
     weather_hourly.hourly_forecast.forEach(function (hour_forecast, idx, arr) {
         var hour = parseInt(hour_forecast.FCTTIME.hour)
-        if (idx == 0 || hour == weather_forecast_time0 || hour == weather_forecast_time1) {
-            if (hour > 12) {
-                hour -= 12;
-            }
+        if (idx == 0 || hour == search_hour0 || hour == search_hour1) {
             if (idx == 0) {
                 time_strs.push("now")
+                if (weather_forecast_rel_not_abs) {
+                    search_hour0 = (search_hour0 + hour) % 24;
+                    search_hour1 = (search_hour1 + hour) % 24;
+                }
             } else {
+                if (hour > 12) {
+                    hour -= 12;
+                }
                 time_strs.push(hour.toString() + hour_forecast.FCTTIME.ampm.toLowerCase())
             }
             // console.log(JSON.stringify(hour_forecast.FCTTIME.pretty));
