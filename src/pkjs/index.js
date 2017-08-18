@@ -115,8 +115,10 @@ Pebble.addEventListener('ready',
   function(e) {
     // console.log('PebbleKit JS ready!');
       // Update s_js_ready on watch
-      weather_apikey = localStorage.getItem('weather_apikey');
       Pebble.sendAppMessage({'JSReady': 1})                        
+      weather_apikey = localStorage.getItem('weather_apikey');
+      weather_forecast_time0 = localStorage.getItem('weather_forecast_time0');
+      weather_forecast_time1 = localStorage.getItem('weather_forecast_time1');
       // console.log(e.type);
   }
 );
