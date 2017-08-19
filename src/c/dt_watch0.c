@@ -196,7 +196,7 @@ static void display_weather_state(void) {
 static void fetch_weather(void) {
   DictionaryIterator *out_iter;
   AppMessageResult result = app_message_outbox_begin(&out_iter);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "fetch_weather");
+  // APP_LOG(APP_LOG_LEVEL_DEBUG, "fetch_weather");
   
   if(result == APP_MSG_OK) {
     // Construct the message
@@ -211,7 +211,7 @@ static void fetch_weather(void) {
 
   // Check the result
   if(result != APP_MSG_OK) {
-    // APP_LOG(APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
+    APP_LOG(APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
   }  
 }
 

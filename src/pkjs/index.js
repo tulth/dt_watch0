@@ -1,9 +1,9 @@
-"use strict";
+ "use strict";
 var message_keys = require('message_keys');
 
 var Clay = require('pebble-clay');
 var clayConfig = require('./config');
-var clay = new Clay(clayConfig, null, { autoHandleEvents: false });
+var clay = new Clay(clayConfig, null, {autoHandleEvents: false});
 
 var weather_hourly_test = require('./weather_example');
 
@@ -16,14 +16,13 @@ var pebble_response = {
     icons: [39, 39, 39],
     times: ["tbd", "tbd", "tbd"],
     temps: ["tbd", "tbd", "tbd"]
-}
+};
 
 // Listen for when the config is requested
-function show_configuration_handler (e) {
-    console.log('show configuration!');
+function show_configuration_handler(e) {
+    // console.log('show configuration!');
     clay.config = clayConfig;
     Pebble.openURL(clay.generateUrl());
-    
 }
 Pebble.addEventListener('showConfiguration', show_configuration_handler);
 
@@ -34,7 +33,7 @@ function webviewclosed_handler(e) {
     // Get the keys and values from each config item
     var settings_dict = clay.getSettings(e.response, false);  // false means i'll manually back map keys
     if ('weather_apikey' in settings_dict) {
-        weather_apikey = settings_dict.weather_apikey.value
+        weather_apikey = settings_dict.weather_apikey.value;
         // console.log('weather_apikey: ', weather_apikey);
         if (weather_apikey !== null) {
             localStorage.setItem('weather_apikey', weather_apikey);
@@ -44,7 +43,7 @@ function webviewclosed_handler(e) {
         delete settings_dict.weather_apikey;
     }
     if ('weather_forecast_time0' in settings_dict) {
-        weather_forecast_time0 = settings_dict.weather_forecast_time0.value
+        weather_forecast_time0 = settings_dict.weather_forecast_time0.value;
         // console.log('weather_forecast_time0: ', weather_forecast_time0);
         if (weather_forecast_time0 !== null) {
             localStorage.setItem('weather_forecast_time0', weather_forecast_time0);
@@ -54,7 +53,7 @@ function webviewclosed_handler(e) {
         delete settings_dict.weather_forecast_time0;
     }
     if ('weather_forecast_time1' in settings_dict) {
-        weather_forecast_time1 = settings_dict.weather_forecast_time1.value
+        weather_forecast_time1 = settings_dict.weather_forecast_time1.value;
         // console.log('weather_forecast_time1: ', weather_forecast_time1);
         if (weather_forecast_time1 !== null) {
             localStorage.setItem('weather_forecast_time1', weather_forecast_time1);
@@ -64,10 +63,10 @@ function webviewclosed_handler(e) {
         delete settings_dict.weather_forecast_time1;
     }
     if ('weather_forecast_rel_not_abs' in settings_dict) {
-        weather_forecast_rel_not_abs = settings_dict.weather_forecast_rel_not_abs.value
-        console.log('weather_forecast_rel_not_abs: ', weather_forecast_rel_not_abs);
+        weather_forecast_rel_not_abs = settings_dict.weather_forecast_rel_not_abs.value;
+        // console.log('weather_forecast_rel_not_abs: ', weather_forecast_rel_not_abs);
         if (weather_forecast_rel_not_abs !== null) {
-            localStorage.setItem('weather_forecast_rel_not_abs', weather_forecast_rel_not_abs);
+            localStorage.setItem('weather_forecast_rel_not_abs', JSON.stringify(weather_forecast_rel_not_abs));
         } else {
             localStorage.removeItem('weather_forecast_rel_not_abs');
         }
@@ -76,19 +75,21 @@ function webviewclosed_handler(e) {
     // Send settings values to watch side
     settings_dict = Clay.prepareSettingsForAppMessage(settings_dict);
     // console.log('settings_dict: ', JSON.stringify(settings_dict));
-    Pebble.sendAppMessage(settings_dict, function(e) {
-        console.log('Sent config data to Pebble');
-    }, function(e) {
-        console.log('Failed to send config data!');
-        console.log(JSON.stringify(e));
-    });
+    Pebble.sendAppMessage(settings_dict,
+                          function (e) {
+                              console.log('Sent config data to Pebble');
+                          },
+                          function (e) {
+                              console.log('Failed to send config data!');
+                              console.log(JSON.stringify(e));
+                          });
 }
 Pebble.addEventListener('webviewclosed', webviewclosed_handler);
 
 
 function fetch_weather_json(latitude, longitude, process_response) {
-    var url = "https://api.wunderground.com/api/" + weather_apikey + "/hourly/q/" + latitude + "," + longitude + ".json"
-    console.log(url);
+    var url = "https://api.wunderground.com/api/" + weather_apikey + "/hourly/q/" + latitude + "," + longitude + ".json";
+    // console.log(url);
     //var url = "https://api.wunderground.com/api/" + weather_apikey + "/hourly/q/" + "AL/Madison.json"
     var debug = false;
     if (debug) {
@@ -105,149 +106,195 @@ function fetch_weather_json(latitude, longitude, process_response) {
                         var response = JSON.parse(req.responseText);
                         // console.log('response: ', JSON.stringify(response));
                         if ("error" in response.response) {
-                            console.log('Error in response');
+                            console.log('Error in weather underground response');
                         } else {
                             process_response(response);
                         }
                     } else {
-                        console.log('Error');
+                        console.log('Error in get weather');
                     }
                 }
             };
             req.send(null);
-        } catch(err){
-            // console.log("Unable to GET weather JSON: " + err.message);
+        } catch (err) {
+            console.log("Unable to GET weather JSON: " + err.message);
         }
     }
 }
 
 // Listen for when the watchface is opened
-Pebble.addEventListener('ready', 
-  function(e) {
+Pebble.addEventListener('ready',
+  function (e) {
     // console.log('PebbleKit JS ready!');
       // Update s_js_ready on watch
-      Pebble.sendAppMessage({'JSReady': 1})                        
       weather_apikey = localStorage.getItem('weather_apikey');
-      weather_forecast_time0 = localStorage.getItem('weather_forecast_time0');
-      weather_forecast_time1 = localStorage.getItem('weather_forecast_time1');
-      weather_forecast_rel_not_abs = localStorage.getItem('weather_forecast_rel_not_abs');
+      weather_forecast_time0 = parseInt(localStorage.getItem('weather_forecast_time0'));
+      weather_forecast_time1 = parseInt(localStorage.getItem('weather_forecast_time1'));
+      weather_forecast_rel_not_abs = JSON.parse(localStorage.getItem('weather_forecast_rel_not_abs'));
+      Pebble.sendAppMessage({'JSReady': 1});
       // console.log(e.type);
-  }
-);
+  });
 
 function get_icon_from_url(url) {
-    return url.substr(url.lastIndexOf("/")+1).split('.')[0];
+    return url.substr(url.lastIndexOf("/") + 1).split('.')[0];
 }
 
 function icon_name_to_key(icon_name) {
-    switch(icon_name) {
-    case "chanceflurries":    return 1;
-    case "chancerain":        return 2;
-    case "chancesleet":       return 3;
-    case "chancesnow":        return 4;
-    case "chancetstorms":     return 5;
-    case "clear":             return 6;
-    case "cloudy":            return 7;
-    case "flurries":          return 8;
-    case "fog":               return 9;
-    case "hazy":              return 10;
-    case "mostlycloudy":      return 11;
-    case "mostlysunny":       return 12;
-    case "nt_chanceflurries": return 13;
-    case "nt_chancerain":     return 14;
-    case "nt_chancesleet":    return 15;
-    case "nt_chancesnow":     return 16;
-    case "nt_chancetstorms":  return 17;
-    case "nt_clear":          return 18;
-    case "nt_cloudy":         return 19;
-    case "nt_flurries":       return 20;
-    case "nt_fog":            return 21;
-    case "nt_hazy":           return 22;
-    case "nt_mostlycloudy":   return 23;
-    case "nt_mostlysunny":    return 24;
-    case "nt_partlycloudy":   return 25;
-    case "nt_partlysunny":    return 26;
-    case "nt_rain":           return 27;
-    case "nt_sleet":          return 28;
-    case "nt_snow":           return 29;
-    case "nt_sunny":          return 30;
-    case "nt_tstorms":        return 31;
-    case "partlycloudy":      return 32;
-    case "partlysunny":       return 33;
-    case "rain":              return 34;
-    case "sleet":             return 35;
-    case "snow":              return 36;
-    case "sunny":             return 37;
-    case "tstorms":           return 38;
-    default:                  return 39;
+    switch (icon_name) {
+    case "chanceflurries":
+        return 1;
+    case "chancerain":
+        return 2;
+    case "chancesleet":
+        return 3;
+    case "chancesnow":
+        return 4;
+    case "chancetstorms":
+        return 5;
+    case "clear":
+        return 6;
+    case "cloudy":
+        return 7;
+    case "flurries":
+        return 8;
+    case "fog":
+        return 9;
+    case "hazy":
+        return 10;
+    case "mostlycloudy":
+        return 11;
+    case "mostlysunny":
+        return 12;
+    case "nt_chanceflurries":
+        return 13;
+    case "nt_chancerain":
+        return 14;
+    case "nt_chancesleet":
+        return 15;
+    case "nt_chancesnow":
+        return 16;
+    case "nt_chancetstorms":
+        return 17;
+    case "nt_clear":
+        return 18;
+    case "nt_cloudy":
+        return 19;
+    case "nt_flurries":
+        return 20;
+    case "nt_fog":
+        return 21;
+    case "nt_hazy":
+        return 22;
+    case "nt_mostlycloudy":
+        return 23;
+    case "nt_mostlysunny":
+        return 24;
+    case "nt_partlycloudy":
+        return 25;
+    case "nt_partlysunny":
+        return 26;
+    case "nt_rain":
+        return 27;
+    case "nt_sleet":
+        return 28;
+    case "nt_snow":
+        return 29;
+    case "nt_sunny":
+        return 30;
+    case "nt_tstorms":
+        return 31;
+    case "partlycloudy":
+        return 32;
+    case "partlysunny":
+        return 33;
+    case "rain":
+        return 34;
+    case "sleet":
+        return 35;
+    case "snow":
+        return 36;
+    case "sunny":
+        return 37;
+    case "tstorms":
+        return 38;
+    default:
+        return 39;
     }
 }
 
 function send_weather_to_pebble() {
-    var icons_message = {}
-    // console.log('send_weather_to_pebble')
+    var icons_message = {};
+    // console.log('send_weather_to_pebble');
     pebble_response.icons.forEach(function (icon, idx, na) {
         icons_message[message_keys.ResponseWeatherIcons + idx] = icon;
     });
     // console.log('icons_message: ', JSON.stringify(icons_message));
-    Pebble.sendAppMessage(icons_message, function(e) {
+    Pebble.sendAppMessage(icons_message, function (e) {
         // console.log('Sent config data to Pebble');
-    }, function(e) {
-        // console.log('Failed to send weather response icons data!');
-        // console.log(JSON.stringify(e));
+    }, function (e) {
+        console.log('Failed to send weather response icons data!');
+        console.log(JSON.stringify(e));
     });
     //
-    var times_message = {}
+    var times_message = {};
     pebble_response.times.forEach(function (time, idx, na) {
         times_message[message_keys.ResponseWeatherTimeStrs + idx] = time;
     });
     // console.log('times_message: ', JSON.stringify(times_message));
-    Pebble.sendAppMessage(times_message, function(e) {
+    Pebble.sendAppMessage(times_message, function (e) {
         // console.log('Sent config data to Pebble');
-    }, function(e) {
-        // console.log('Failed to send weather response times data!');
-        // console.log(JSON.stringify(e));
+    }, function (e) {
+        console.log('Failed to send weather response times data!');
+        console.log(JSON.stringify(e));
     });
     //
-    var temps_message = {}
+    var temps_message = {};
     pebble_response.temps.forEach(function (temp, idx, na) {
         temps_message[message_keys.ResponseWeatherTempStrs + idx] = temp;
     });
     // console.log('temps_message: ', JSON.stringify(temps_message));
-    Pebble.sendAppMessage(temps_message, function(e) {
+    Pebble.sendAppMessage(temps_message, function (e) {
         // console.log('Sent config data to Pebble');
-    }, function(e) {
-        // console.log('Failed to send weather response temps data!');
-        // console.log(JSON.stringify(e));
-    });   
+    }, function (e) {
+        console.log('Failed to send weather response temps data!');
+        console.log(JSON.stringify(e));
+    });
 }
 function process_weather_and_send_to_pebble(weather_hourly) {
-    var time_strs = []
-    var icon_ids = []
-    var temp_strs = []
-    var search_hour0 = weather_forecast_time0;
-    var search_hour1 = weather_forecast_time1;
+    var time_strs = [];
+    var icon_ids = [];
+    var temp_strs = [];
+    var search_hour0 = parseInt(weather_forecast_time0);
+    var search_hour1 = parseInt(weather_forecast_time1);
+    var hour;
     weather_hourly.hourly_forecast.forEach(function (hour_forecast, idx, arr) {
-        var hour = parseInt(hour_forecast.FCTTIME.hour)
-        if (idx == 0 || hour == search_hour0 || hour == search_hour1) {
-            if (idx == 0) {
-                time_strs.push("now")
+        hour = parseInt(hour_forecast.FCTTIME.hour);
+        // console.log('b', idx, hour, search_hour0, search_hour1, JSON.stringify(weather_forecast_rel_not_abs));
+        if (idx === 0 || hour === search_hour0 || hour === search_hour1) {
+            // console.log('i0', idx, hour, search_hour0, search_hour1);
+            if (idx === 0) {
+                // console.log('i1', idx, hour, search_hour0, search_hour1);
+                time_strs.push("now");
                 if (weather_forecast_rel_not_abs) {
+                    // console.log(search_hour0, (search_hour0 + hour), (search_hour0 + hour) % 24);
+                    // console.log(search_hour1, (search_hour1 + hour), (search_hour1 + hour) % 24);
                     search_hour0 = (search_hour0 + hour) % 24;
                     search_hour1 = (search_hour1 + hour) % 24;
                 }
             } else {
-                if (hour > 12) {
-                    hour -= 12;
+                hour = hour % 12;
+                if (hour == 0) {
+                    hour = 12;
                 }
-                time_strs.push(hour.toString() + hour_forecast.FCTTIME.ampm.toLowerCase())
+                time_strs.push(hour.toString() + hour_forecast.FCTTIME.ampm.toLowerCase());
             }
             // console.log(JSON.stringify(hour_forecast.FCTTIME.pretty));
             var icon = get_icon_from_url(weather_hourly.hourly_forecast[idx].icon_url);
-            var icon_id = icon_name_to_key(icon)
-            icon_ids.push(icon_id)
-            temp_strs.push(weather_hourly.hourly_forecast[idx].temp.english + '\u00B0')
+            var icon_id = icon_name_to_key(icon);
+            icon_ids.push(icon_id);
+            temp_strs.push(weather_hourly.hourly_forecast[idx].temp.english + '\u00B0');
         }
+        // console.log('a', idx, hour, search_hour0, search_hour1);
     });
     pebble_response.icons = icon_ids.slice(0, 3);
     // console.log(JSON.stringify(pebble_response.icons));
@@ -259,14 +306,14 @@ function process_weather_and_send_to_pebble(weather_hourly) {
 }
 
 function fetch_weather() {
-    // console.log("fetch_weather")
+    // console.log("fetch_weather");
     var locationOptions = {
         // enableHighAccuracy: true,
         maximumAge: 60000,
         timeout: 15000
     };
     function locationSuccess(pos) {
-        console.log('location success');
+        // console.log('location success');
         var latitude = pos.coords.latitude;
         var longitude = pos.coords.longitude;
         fetch_weather_json(latitude, longitude, process_weather_and_send_to_pebble);
@@ -288,7 +335,7 @@ function app_message_handler(e) {
             fetch_weather();
         }
     }
-}                     
+}
 Pebble.addEventListener('appmessage', app_message_handler);
 
 
