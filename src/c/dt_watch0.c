@@ -326,7 +326,7 @@ static void prv_window_unload(Window *window) {
 static void update_time_str(struct tm *tick_time) {
   strftime(s_time_buffer,
            sizeof(s_time_buffer),
-           "%I:%M",
+           clock_is_24h_style() ? "%H:%M" : "%I:%M",
            tick_time);
 }
 
