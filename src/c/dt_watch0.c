@@ -468,7 +468,30 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   for (idx = 0; idx < 3; idx++) {
     Tuple *response_weather_time_str_t = dict_find(iter, MESSAGE_KEY_ResponseWeatherTimeStrs + idx);
     if(response_weather_time_str_t) {
-      strncpy(s_weather_state.weather_time_buffer[idx], response_weather_time_str_t->value->cstring, sizeof(s_weather_state.weather_time_buffer[idx]));
+      if (idx == 0) {
+        s_weather_state.weather_time_buffer[idx][0] = 'n';
+        s_weather_state.weather_time_buffer[idx][1] = 'o';
+        s_weather_state.weather_time_buffer[idx][2] = 'w';
+        s_weather_state.weather_time_buffer[idx][3] = '\0';
+      } else {
+        if (clock_is_24h_style()) {
+          snprintf(s_weather_state.weather_time_buffer[idx], 5,
+                   "%02d00",
+                   (int) response_weather_time_str_t->value->int32);
+        } else {
+          if (response_weather_time_str_t->value->int32 > 12) {
+            snprintf(s_weather_state.weather_time_buffer[idx], 5,
+                     "%dpm",
+                     (int) response_weather_time_str_t->value->int32 - 12);
+          } else {
+            snprintf(s_weather_state.weather_time_buffer[idx], 5,
+                     "%dam",
+                     response_weather_time_str_t->value->int32 == 0 ?
+                     12 :
+                     (int) response_weather_time_str_t->value->int32);
+          }
+        }
+      }
       weather_updated = true;
     }
   }

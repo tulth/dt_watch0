@@ -14,7 +14,7 @@ var weather_forecast_rel_not_abs = false;
 
 var pebble_response = {
     icons: [39, 39, 39],
-    times: ["tbd", "tbd", "tbd"],
+    times: [0, 0, 0],
     temps: ["tbd", "tbd", "tbd"]
 };
 
@@ -261,7 +261,7 @@ function send_weather_to_pebble() {
     });
 }
 function process_weather_and_send_to_pebble(weather_hourly) {
-    var time_strs = [];
+    var times = [];
     var icon_ids = [];
     var temp_strs = [];
     var search_hour0 = parseInt(weather_forecast_time0);
@@ -274,20 +274,14 @@ function process_weather_and_send_to_pebble(weather_hourly) {
             // console.log('i0', idx, hour, search_hour0, search_hour1);
             if (idx === 0) {
                 // console.log('i1', idx, hour, search_hour0, search_hour1);
-                time_strs.push("now");
                 if (weather_forecast_rel_not_abs) {
                     // console.log(search_hour0, (search_hour0 + hour), (search_hour0 + hour) % 24);
                     // console.log(search_hour1, (search_hour1 + hour), (search_hour1 + hour) % 24);
                     search_hour0 = (search_hour0 + hour) % 24;
                     search_hour1 = (search_hour1 + hour) % 24;
                 }
-            } else {
-                hour = hour % 12;
-                if (hour == 0) {
-                    hour = 12;
-                }
-                time_strs.push(hour.toString() + hour_forecast.FCTTIME.ampm.toLowerCase());
             }
+            times.push(hour);
             // console.log(JSON.stringify(hour_forecast.FCTTIME.pretty));
             var icon = get_icon_from_url(weather_hourly.hourly_forecast[idx].icon_url);
             var icon_id = icon_name_to_key(icon);
@@ -298,7 +292,7 @@ function process_weather_and_send_to_pebble(weather_hourly) {
     });
     pebble_response.icons = icon_ids.slice(0, 3);
     // console.log(JSON.stringify(pebble_response.icons));
-    pebble_response.times = time_strs.slice(0, 3);
+    pebble_response.times = times;
     // console.log(JSON.stringify(pebble_response.times));
     pebble_response.temps = temp_strs.slice(0, 3);
     // console.log(JSON.stringify(pebble_response.temps));
