@@ -59,6 +59,12 @@
                     "file": "fonts/LECO1976-Narrow.ttf"
                 },
                 {
+                    "type": "font",
+                    "characterRegex": "[0-9Z]",
+                    "name": "LECO_FONT_14",
+                    "file": "fonts/LECO1976-Narrow.ttf"
+                },
+                {
                     "type": "png",
                     "menuIcon": true,
                     "name": "MENU_ICON",

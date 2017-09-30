@@ -11,6 +11,7 @@
 #define TIME_STR_LEN (5+1)
 #define DATE_STR_LEN (9+1)
 #define DATE_STRFTIME_LEN 12
+#define LECO_14_HEIGHT 14
 #define LECO_16_HEIGHT 16
 #define LECO_25_HEIGHT 25
 #define LECO_53_HEIGHT 53
@@ -35,6 +36,7 @@ typedef struct WeatherState {
 // windows
 static Window *s_window;
 // Layers
+static TextLayer *s_utc_time_text_layer;
 static TextLayer *s_time_text_layer;
 static TextLayer *s_date_text_layer;
 static TextLayer *s_forecast_text_layer;
@@ -43,6 +45,7 @@ static TextLayer *s_weather_temp_text_layer[3];
 static BitmapLayer *s_weather_bitmap_layer[3];
 static BatteryBarLayer *s_battery_layer;
 // Resources
+static GFont leco_14;
 static GFont leco_16;
 static GFont leco_25;
 static GFont leco_53;
@@ -88,6 +91,7 @@ static GBitmap *weather_unknown_bitmap;
 
 // module variables
 static ClaySettings settings;
+static char s_utc_time_buffer[TIME_STR_LEN];
 static char s_time_buffer[TIME_STR_LEN];
 static char s_date_buffer[DATE_STR_LEN];
 static WeatherState s_weather_state;
@@ -98,45 +102,45 @@ static bool s_jsready = false;
 
 // Weather
 
-#define WEATHER_ICON_ID_chanceflurries       1 
-#define WEATHER_ICON_ID_chancerain           2 
-#define WEATHER_ICON_ID_chancesleet          3 
-#define WEATHER_ICON_ID_chancesnow           4 
-#define WEATHER_ICON_ID_chancetstorms        5 
-#define WEATHER_ICON_ID_clear                6 
-#define WEATHER_ICON_ID_cloudy               7 
-#define WEATHER_ICON_ID_flurries             8 
-#define WEATHER_ICON_ID_fog                  9 
-#define WEATHER_ICON_ID_hazy                 10 
-#define WEATHER_ICON_ID_mostlycloudy         11 
-#define WEATHER_ICON_ID_mostlysunny          12 
-#define WEATHER_ICON_ID_nt_chanceflurries    13 
-#define WEATHER_ICON_ID_nt_chancerain        14 
-#define WEATHER_ICON_ID_nt_chancesleet       15 
-#define WEATHER_ICON_ID_nt_chancesnow        16 
-#define WEATHER_ICON_ID_nt_chancetstorms     17 
-#define WEATHER_ICON_ID_nt_clear             18 
-#define WEATHER_ICON_ID_nt_cloudy            19 
-#define WEATHER_ICON_ID_nt_flurries          20 
-#define WEATHER_ICON_ID_nt_fog               21 
-#define WEATHER_ICON_ID_nt_hazy              22 
-#define WEATHER_ICON_ID_nt_mostlycloudy      23 
-#define WEATHER_ICON_ID_nt_mostlysunny       24 
-#define WEATHER_ICON_ID_nt_partlycloudy      25 
-#define WEATHER_ICON_ID_nt_partlysunny       26 
-#define WEATHER_ICON_ID_nt_rain              27 
-#define WEATHER_ICON_ID_nt_sleet             28 
-#define WEATHER_ICON_ID_nt_snow              29 
-#define WEATHER_ICON_ID_nt_sunny             30 
-#define WEATHER_ICON_ID_nt_tstorms           31 
-#define WEATHER_ICON_ID_partlycloudy         32 
-#define WEATHER_ICON_ID_partlysunny          33 
-#define WEATHER_ICON_ID_rain                 34 
-#define WEATHER_ICON_ID_sleet                35 
-#define WEATHER_ICON_ID_snow                 36 
-#define WEATHER_ICON_ID_sunny                37 
-#define WEATHER_ICON_ID_tstorms              38 
-#define WEATHER_ICON_ID_unknown              39 
+#define WEATHER_ICON_ID_chanceflurries       1
+#define WEATHER_ICON_ID_chancerain           2
+#define WEATHER_ICON_ID_chancesleet          3
+#define WEATHER_ICON_ID_chancesnow           4
+#define WEATHER_ICON_ID_chancetstorms        5
+#define WEATHER_ICON_ID_clear                6
+#define WEATHER_ICON_ID_cloudy               7
+#define WEATHER_ICON_ID_flurries             8
+#define WEATHER_ICON_ID_fog                  9
+#define WEATHER_ICON_ID_hazy                 10
+#define WEATHER_ICON_ID_mostlycloudy         11
+#define WEATHER_ICON_ID_mostlysunny          12
+#define WEATHER_ICON_ID_nt_chanceflurries    13
+#define WEATHER_ICON_ID_nt_chancerain        14
+#define WEATHER_ICON_ID_nt_chancesleet       15
+#define WEATHER_ICON_ID_nt_chancesnow        16
+#define WEATHER_ICON_ID_nt_chancetstorms     17
+#define WEATHER_ICON_ID_nt_clear             18
+#define WEATHER_ICON_ID_nt_cloudy            19
+#define WEATHER_ICON_ID_nt_flurries          20
+#define WEATHER_ICON_ID_nt_fog               21
+#define WEATHER_ICON_ID_nt_hazy              22
+#define WEATHER_ICON_ID_nt_mostlycloudy      23
+#define WEATHER_ICON_ID_nt_mostlysunny       24
+#define WEATHER_ICON_ID_nt_partlycloudy      25
+#define WEATHER_ICON_ID_nt_partlysunny       26
+#define WEATHER_ICON_ID_nt_rain              27
+#define WEATHER_ICON_ID_nt_sleet             28
+#define WEATHER_ICON_ID_nt_snow              29
+#define WEATHER_ICON_ID_nt_sunny             30
+#define WEATHER_ICON_ID_nt_tstorms           31
+#define WEATHER_ICON_ID_partlycloudy         32
+#define WEATHER_ICON_ID_partlysunny          33
+#define WEATHER_ICON_ID_rain                 34
+#define WEATHER_ICON_ID_sleet                35
+#define WEATHER_ICON_ID_snow                 36
+#define WEATHER_ICON_ID_sunny                37
+#define WEATHER_ICON_ID_tstorms              38
+#define WEATHER_ICON_ID_unknown              39
 
 GBitmap *map_weather_id_to_bitmap(int fct) {
   switch (fct) {
@@ -197,7 +201,7 @@ static void fetch_weather(void) {
   DictionaryIterator *out_iter;
   AppMessageResult result = app_message_outbox_begin(&out_iter);
   // APP_LOG(APP_LOG_LEVEL_DEBUG, "fetch_weather");
-  
+
   if(result == APP_MSG_OK) {
     // Construct the message
     dict_write_uint8(out_iter, MESSAGE_KEY_FetchWeather, 1);
@@ -212,7 +216,7 @@ static void fetch_weather(void) {
   // Check the result
   if(result != APP_MSG_OK) {
     APP_LOG(APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
-  }  
+  }
 }
 
 
@@ -224,11 +228,11 @@ static void set_default_weather_state(void) {
     strncpy(s_weather_state.weather_time_buffer[idx], "TBD\0", sizeof(s_weather_state.weather_time_buffer[idx]));
     strncpy(s_weather_state.weather_temp_buffer[idx], "TBD\0", sizeof(s_weather_state.weather_temp_buffer[idx]));
   }
-  
+
 }
 
 #define timestamp_age(timestamp) ((time(NULL) - timestamp))
-  
+
 static void safe_fetch_weather(void) {
   // APP_LOG(APP_LOG_LEVEL_DEBUG, "safe_fetch_weather");
   if (timestamp_age(s_weather_state.timestamp) < 15 * SECONDS_PER_MINUTE) {
@@ -252,18 +256,26 @@ static void prv_window_load(Window *window) {
   GRect bounds = layer_get_bounds(window_layer);
 
   // time
-  s_time_text_layer = text_layer_create(GRect(0, 0, bounds.size.w, TIME_TEXT_LAYER_HEIGHT));
+  s_time_text_layer = text_layer_create(GRect(0, 3, bounds.size.w, TIME_TEXT_LAYER_HEIGHT));
   text_layer_set_font(s_time_text_layer, leco_53);
   text_layer_set_text(s_time_text_layer, s_time_buffer);
   text_layer_set_text_alignment(s_time_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_time_text_layer));
+
+  // mini utc time
+  s_utc_time_text_layer = text_layer_create(GRect(3, -2, 60, LECO_14_HEIGHT));
+  text_layer_set_font(s_utc_time_text_layer, leco_14);
+  //  text_layer_set_font(s_utc_time_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_09));
+  text_layer_set_text(s_utc_time_text_layer, s_utc_time_buffer);
+  text_layer_set_text_alignment(s_utc_time_text_layer, GTextAlignmentLeft);
+  layer_add_child(window_layer, text_layer_get_layer(s_utc_time_text_layer));
 
   // battery bar, added after time so time does not mask it
   s_battery_layer = battery_bar_layer_create();
   layer_add_child(window_layer, s_battery_layer);
   battery_bar_set_percent_hidden(true);
   battery_bar_set_position(GPoint(41, 2));
-  
+
   // date
   s_date_text_layer = text_layer_create(GRect(0, TIME_TEXT_LAYER_HEIGHT, bounds.size.w, DATE_TEXT_LAYER_HEIGHT));
   text_layer_set_font(s_date_text_layer, leco_25);
@@ -313,6 +325,7 @@ static void prv_window_load(Window *window) {
 static void prv_window_unload(Window *window) {
   battery_bar_layer_destroy(s_battery_layer);
   text_layer_destroy(s_time_text_layer);
+  text_layer_destroy(s_utc_time_text_layer);
   text_layer_destroy(s_date_text_layer);
   text_layer_destroy(s_forecast_text_layer);
   int idx;
@@ -328,6 +341,13 @@ static void update_time_str(struct tm *tick_time) {
            sizeof(s_time_buffer),
            clock_is_24h_style() ? "%H:%M" : "%I:%M",
            tick_time);
+
+  time_t temp = time(NULL);
+  struct tm *utc_time = gmtime(&temp);
+  strftime(s_utc_time_buffer,
+           sizeof(s_utc_time_buffer),
+           "%H%MZ",
+           utc_time);
 }
 
 void toupper_str(char *str)
@@ -353,12 +373,13 @@ static void update_date_str(struct tm *tick_time) {
 
 static void update_time(struct tm *tick_time) {
   update_time_str(tick_time);
+  text_layer_set_text(s_utc_time_text_layer, s_utc_time_buffer);
   text_layer_set_text(s_time_text_layer, s_time_buffer);
 }
 
 static void update_date(struct tm *tick_time) {
   update_date_str(tick_time);
-  text_layer_set_text(s_date_text_layer, s_date_buffer);  
+  text_layer_set_text(s_date_text_layer, s_date_buffer);
 }
 
 struct tm *now(void) {
@@ -367,8 +388,11 @@ struct tm *now(void) {
 }
 
 static void apply_settings(void) {
+  window_set_background_color(s_window, settings.TimeDateBackgroundColor);
+  text_layer_set_text_color(s_utc_time_text_layer, settings.TimeFontColor);
   text_layer_set_text_color(s_time_text_layer, settings.TimeFontColor);
   text_layer_set_text_color(s_date_text_layer, settings.DateFontColor);
+  text_layer_set_background_color(s_utc_time_text_layer, settings.TimeDateBackgroundColor);
   text_layer_set_background_color(s_time_text_layer, settings.TimeDateBackgroundColor);
   text_layer_set_background_color(s_date_text_layer, settings.TimeDateBackgroundColor);
   text_layer_set_background_color(s_forecast_text_layer, settings.ForecastBackgroundColor);
@@ -390,7 +414,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
       safe_fetch_weather();
     }
   }
-  
+
   if ((units_changed & DAY_UNIT) || (s_date_buffer[0] == 'X')) {
     update_date(tick_time);
   }
@@ -401,7 +425,7 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   bool settings_updated = false;
   bool weather_updated = false;
   int idx;
-  
+
   Tuple *ready_tuple = dict_find(iter, MESSAGE_KEY_JSReady);
   if(ready_tuple) {
     s_jsready = true;
@@ -504,7 +528,7 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
       weather_updated = true;
     }
   }
-  
+
   if (weather_updated) {
     display_weather_state();
   }
@@ -521,7 +545,7 @@ static void prv_init(void) {
   strncpy(settings.DateStrftimeStr, "%a %d%b", sizeof(settings.DateStrftimeStr));
   persist_read_data(SETTINGS_KEY, &settings, sizeof(settings));
   s_weather_state.timestamp = 0;
-  
+
   persist_read_data(WEATHER_KEY, &s_weather_state, sizeof(s_weather_state));
   if (timestamp_age(s_weather_state.timestamp) > 45 * SECONDS_PER_MINUTE) {
     set_default_weather_state();
@@ -536,10 +560,11 @@ static void prv_init(void) {
   update_date_str(now());
 
   // fonts
+  leco_14 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_LECO_FONT_14));
   leco_16 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_LECO_FONT_16));
   leco_25 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_LECO_FONT_25));
   leco_53 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_LECO_FONT_53));
-  
+
   // weather icons
   weather_chanceflurries_bitmap    = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_ICON_chanceflurries);
   weather_chancerain_bitmap        = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_ICON_chancerain);
@@ -580,7 +605,7 @@ static void prv_init(void) {
   weather_sunny_bitmap             = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_ICON_sunny);
   weather_tstorms_bitmap           = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_ICON_tstorms);
   weather_unknown_bitmap           = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_ICON_unknown);
-  
+
   s_window = window_create();
   window_set_window_handlers(s_window, (WindowHandlers) {
       .load = prv_window_load,
@@ -589,7 +614,7 @@ static void prv_init(void) {
   const bool animated = true;
   window_stack_push(s_window, animated);
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
-  //tick_timer_service_subscribe(SECOND_UNIT, tick_handler);  
+  //tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
   apply_settings();
   display_weather_state();
 }
