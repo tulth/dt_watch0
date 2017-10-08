@@ -2,6 +2,7 @@
 #include <pebble.h>
 #include <pebble_fonts.h>
 #include <pebble-battery-bar/pebble-battery-bar.h>
+#include <pebble-events/pebble-events.h>
 
 // Settings
 #define SETTINGS_KEY 1
@@ -35,6 +36,8 @@ typedef struct WeatherState {
 
 // windows
 static Window *s_window;
+// handle
+static EventHandle s_bt_handle;
 // Layers
 static TextLayer *s_utc_time_text_layer;
 static TextLayer *s_time_text_layer;
@@ -43,12 +46,14 @@ static TextLayer *s_forecast_text_layer;
 static TextLayer *s_weather_time_text_layer[3];
 static TextLayer *s_weather_temp_text_layer[3];
 static BitmapLayer *s_weather_bitmap_layer[3];
+static BitmapLayer *s_bt_icon_layer;
 static BatteryBarLayer *s_battery_layer;
 // Resources
 static GFont leco_14;
 static GFont leco_16;
 static GFont leco_25;
 static GFont leco_53;
+static GBitmap *bt_icon_disconnected;
 static GBitmap *weather_chanceflurries_bitmap;
 static GBitmap *weather_chancerain_bitmap;
 static GBitmap *weather_chancesleet_bitmap;
@@ -276,6 +281,17 @@ static void prv_window_load(Window *window) {
   battery_bar_set_percent_hidden(true);
   battery_bar_set_position(GPoint(41, 2));
 
+  // bt icon
+  s_bt_icon_layer = bitmap_layer_create(GRect(bounds.size.w-16,
+                                              0,
+                                              16,
+                                              14));
+  bitmap_layer_set_compositing_mode(s_bt_icon_layer, GCompOpSet);
+  bitmap_layer_set_background_color(s_bt_icon_layer, GColorWhite);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_bt_icon_layer));
+  bitmap_layer_set_bitmap(s_bt_icon_layer, bt_icon_disconnected);
+  layer_mark_dirty((Layer *)s_bt_icon_layer);
+
   // date
   s_date_text_layer = text_layer_create(GRect(0, TIME_TEXT_LAYER_HEIGHT, bounds.size.w, DATE_TEXT_LAYER_HEIGHT));
   text_layer_set_font(s_date_text_layer, leco_25);
@@ -325,6 +341,7 @@ static void prv_window_load(Window *window) {
 static void prv_window_unload(Window *window) {
   battery_bar_layer_destroy(s_battery_layer);
   text_layer_destroy(s_time_text_layer);
+  bitmap_layer_destroy(s_bt_icon_layer);
   text_layer_destroy(s_utc_time_text_layer);
   text_layer_destroy(s_date_text_layer);
   text_layer_destroy(s_forecast_text_layer);
@@ -535,6 +552,13 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 }
 
 
+static void bluetooth_connection_callback(bool connected) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "bluetooth connection event %d", connected);
+  layer_set_hidden((Layer *)s_bt_icon_layer, connected);
+
+  layer_mark_dirty((Layer *)s_bt_icon_layer);
+}
+
 static void prv_init(void) {
   // settings_init()
   settings.TimeFontColor = GColorWhite;
@@ -564,6 +588,9 @@ static void prv_init(void) {
   leco_16 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_LECO_FONT_16));
   leco_25 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_LECO_FONT_25));
   leco_53 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_LECO_FONT_53));
+
+  // bt icons
+  bt_icon_disconnected = gbitmap_create_with_resource(RESOURCE_ID_BT_ICON_DISCONNECTED);
 
   // weather icons
   weather_chanceflurries_bitmap    = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_ICON_chanceflurries);
@@ -616,6 +643,10 @@ static void prv_init(void) {
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
   //tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
   apply_settings();
+  bluetooth_connection_callback(connection_service_peek_pebble_app_connection());
+  s_bt_handle = events_connection_service_subscribe((ConnectionHandlers) {
+      .pebble_app_connection_handler = bluetooth_connection_callback
+        });
   display_weather_state();
 }
 
@@ -627,6 +658,7 @@ static void save_settings() {
 
 static void prv_deinit(void) {
   save_settings();
+  events_connection_service_unsubscribe(s_bt_handle);
   window_destroy(s_window);
 }
 

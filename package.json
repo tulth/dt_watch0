@@ -72,6 +72,11 @@
                 },
                 {
                     "type": "bitmap",
+                    "name": "BT_ICON_DISCONNECTED",
+                    "file": "icon/png/phone_disconnect.png"
+                },
+                {
+                    "type": "bitmap",
                     "name": "WEATHER_ICON_chanceflurries",
                     "file": "weather/png/dt/chanceflurries.png"
                 },

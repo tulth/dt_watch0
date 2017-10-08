@@ -1,0 +1,26 @@
+<svg height="100" width="100" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <g id="phone_disconnect" style="stroke:black;stroke-width:0.1;stroke-linecap:round;fill:#FF0000">
+      <path d='M 28 30
+               A 60 60 45 0 0 38 48
+               L 23 63
+               A 110 110 -45 0 1 1 21
+               L 20 1
+               L 34 20
+               z'/>
+      <path d='M 10 90
+               L 75 25
+               L 82 32
+               L 17 97
+               z'/>
+      <path d='M 50 60
+               A 60 60 45 0 0 70 72
+               L 80 66
+               L 99 79
+               L 80 99
+               A 110 110 -45 0 1 35 75
+               z'/>
+    </g>
+  </defs>
+  <use xlink:href="#phone_disconnect" />  
+</svg>
