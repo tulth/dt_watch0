@@ -90,7 +90,8 @@ Pebble.addEventListener('webviewclosed', webviewclosed_handler);
 function fetch_weather_json(latitude, longitude, process_response) {
     var url = "https://api.wunderground.com/api/" + weather_apikey + "/hourly/q/" + latitude + "," + longitude + ".json";
     // console.log(url);
-    //var url = "https://api.wunderground.com/api/" + weather_apikey + "/hourly/q/" + "AL/Madison.json"
+    //var url = "https://api.wunderground.com/api/" + weather_apikey +
+    //"/hourly/q/" + "AL/Madison.json"
     var debug = false;
     if (debug) {
         process_response(weather_hourly_test);
@@ -286,7 +287,7 @@ function process_weather_and_send_to_pebble(weather_hourly) {
             var icon = get_icon_from_url(weather_hourly.hourly_forecast[idx].icon_url);
             var icon_id = icon_name_to_key(icon);
             icon_ids.push(icon_id);
-            temp_strs.push(weather_hourly.hourly_forecast[idx].temp.english + '\u00B0');
+            temp_strs.push(parseInt(weather_hourly.hourly_forecast[idx].temp.english).toFixed(0) + '\u00B0');
         }
         // console.log('a', idx, hour, search_hour0, search_hour1);
     });
