@@ -74,7 +74,7 @@ module.exports = [
                 "type": "input",
                 "messageKey": "weather_apikey",
                 "defaultValue": "",
-                "label": "Weather underground API key"
+                "label": "Darksky API key"
             }
         ]
     },

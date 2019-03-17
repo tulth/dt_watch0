@@ -5,7 +5,8 @@ var Clay = require('pebble-clay');
 var clayConfig = require('./config');
 var clay = new Clay(clayConfig, null, {autoHandleEvents: false});
 
-var weather_hourly_test = require('./weather_example');
+// var weather_hourly_test = require('./weather_example');
+var weather_hourly_test = require('./darksky_example');
 
 var weather_apikey = null;
 var weather_forecast_time0 = 8;
@@ -88,29 +89,29 @@ Pebble.addEventListener('webviewclosed', webviewclosed_handler);
 
 
 function fetch_weather_json(latitude, longitude, process_response) {
-    var url = "https://api.wunderground.com/api/" + weather_apikey + "/hourly/q/" + latitude + "," + longitude + ".json";
-    // console.log(url);
+    var url = "https://api.darksky.net/forecast/" + weather_apikey + "/" + latitude + "," + longitude;
+    // console.log('weather_apikey:' + weather_apikey);
+    // console.log('latitude:' + latitude);
+    // console.log('longitude:' + longitude);
+    // console.log('url:' + url);
     //var url = "https://api.wunderground.com/api/" + weather_apikey +
     //"/hourly/q/" + "AL/Madison.json"
     var debug = false;
+    // var debug = true;
     if (debug) {
         process_response(weather_hourly_test);
     } else {
         try {
             var req = new XMLHttpRequest();
-            // console.log('url: ', url);
+            // console.log('url: ' + url);
             req.open('GET', url, true);
             req.onload = function () {
                 if (req.readyState === 4) {
                     if (req.status === 200) {
-                        // console.log('req.responseText: ', req.responseText);
+                        //console.log('req.responseText: ' + req.responseText);
                         var response = JSON.parse(req.responseText);
-                        // console.log('response: ', JSON.stringify(response));
-                        if ("error" in response.response) {
-                            console.log('Error in weather underground response');
-                        } else {
-                            process_response(response);
-                        }
+                        // console.log('response: ' + JSON.stringify(response));
+                        process_response(response);  // FIXME should check for error
                     } else {
                         console.log('Error in get weather');
                     }
@@ -141,87 +142,109 @@ function get_icon_from_url(url) {
 }
 
 function icon_name_to_key(icon_name) {
+    console.log('icon_name_to_key, icon_name:' + icon_name)
     switch (icon_name) {
-    case "chanceflurries":
-        return 1;
-    case "chancerain":
-        return 2;
-    case "chancesleet":
-        return 3;
-    case "chancesnow":
-        return 4;
-    case "chancetstorms":
-        return 5;
-    case "clear":
+    case "clear-day":
         return 6;
-    case "cloudy":
-        return 7;
-    case "flurries":
-        return 8;
-    case "fog":
-        return 9;
-    case "hazy":
-        return 10;
-    case "mostlycloudy":
-        return 11;
-    case "mostlysunny":
-        return 12;
-    case "nt_chanceflurries":
-        return 13;
-    case "nt_chancerain":
-        return 14;
-    case "nt_chancesleet":
-        return 15;
-    case "nt_chancesnow":
-        return 16;
-    case "nt_chancetstorms":
-        return 17;
-    case "nt_clear":
+    case "clear-night":
         return 18;
-    case "nt_cloudy":
-        return 19;
-    case "nt_flurries":
-        return 20;
-    case "nt_fog":
-        return 21;
-    case "nt_hazy":
-        return 22;
-    case "nt_mostlycloudy":
-        return 23;
-    case "nt_mostlysunny":
-        return 24;
-    case "nt_partlycloudy":
-        return 25;
-    case "nt_partlysunny":
-        return 26;
-    case "nt_rain":
-        return 27;
-    case "nt_sleet":
-        return 28;
-    case "nt_snow":
-        return 29;
-    case "nt_sunny":
-        return 30;
-    case "nt_tstorms":
-        return 31;
-    case "partlycloudy":
-        return 32;
-    case "partlysunny":
-        return 33;
     case "rain":
         return 34;
-    case "sleet":
-        return 35;
     case "snow":
         return 36;
-    case "sunny":
-        return 37;
-    case "tstorms":
-        return 38;
+    case "sleet":
+        return 35;
+    case "wind":
+        return 39;
+    case "fog":
+        return 9;
+    case "cloudy":
+        return 7;
+    case "partly-cloudy-day":
+        return 32;
+    case "partly-cloudy-night":
+        return 25;
+    // case "chanceflurries":
+    //     return 1;
+    // case "chancerain":
+    //     return 2;
+    // case "chancesleet":
+    //     return 3;
+    // case "chancesnow":
+    //     return 4;
+    // case "chancetstorms":
+    //     return 5;
+    // case "clear":
+    //     return 6;
+    // case "cloudy":
+    //     return 7;
+    // case "flurries":
+    //     return 8;
+    // case "fog":
+    //     return 9;
+    // case "hazy":
+    //     return 10;
+    // case "mostlycloudy":
+    //     return 11;
+    // case "mostlysunny":
+    //     return 12;
+    // case "nt_chanceflurries":
+    //     return 13;
+    // case "nt_chancerain":
+    //     return 14;
+    // case "nt_chancesleet":
+    //     return 15;
+    // case "nt_chancesnow":
+    //     return 16;
+    // case "nt_chancetstorms":
+    //     return 17;
+    // case "nt_clear":
+    //     return 18;
+    // case "nt_cloudy":
+    //     return 19;
+    // case "nt_flurries":
+    //     return 20;
+    // case "nt_fog":
+    //     return 21;
+    // case "nt_hazy":
+    //     return 22;
+    // case "nt_mostlycloudy":
+    //     return 23;
+    // case "nt_mostlysunny":
+    //     return 24;
+    // case "nt_partlycloudy":
+    //     return 25;
+    // case "nt_partlysunny":
+    //     return 26;
+    // case "nt_rain":
+    //     return 27;
+    // case "nt_sleet":
+    //     return 28;
+    // case "nt_snow":
+    //     return 29;
+    // case "nt_sunny":
+    //     return 30;
+    // case "nt_tstorms":
+    //     return 31;
+    // case "partlycloudy":
+    //     return 32;
+    // case "partlysunny":
+    //     return 33;
+    // case "rain":
+    //     return 34;
+    // case "sleet":
+    //     return 35;
+    // case "snow":
+    //     return 36;
+    // case "sunny":
+    //     return 37;
+    // case "tstorms":
+    //     return 38;
     default:
         return 39;
     }
 }
+
 
 function send_weather_to_pebble() {
     var icons_message = {};
@@ -261,6 +284,7 @@ function send_weather_to_pebble() {
         console.log(JSON.stringify(e));
     });
 }
+
 function process_weather_and_send_to_pebble(weather_hourly) {
     var times = [];
     var icon_ids = [];
@@ -268,35 +292,39 @@ function process_weather_and_send_to_pebble(weather_hourly) {
     var search_hour0 = parseInt(weather_forecast_time0);
     var search_hour1 = parseInt(weather_forecast_time1);
     var hour;
-    weather_hourly.hourly_forecast.forEach(function (hour_forecast, idx, arr) {
-        hour = parseInt(hour_forecast.FCTTIME.hour);
-        // console.log('b', idx, hour, search_hour0, search_hour1, JSON.stringify(weather_forecast_rel_not_abs));
-        if (idx === 0 || hour === search_hour0 || hour === search_hour1) {
-            // console.log('i0', idx, hour, search_hour0, search_hour1);
-            if (idx === 0) {
-                // console.log('i1', idx, hour, search_hour0, search_hour1);
-                if (weather_forecast_rel_not_abs) {
-                    // console.log(search_hour0, (search_hour0 + hour), (search_hour0 + hour) % 24);
-                    // console.log(search_hour1, (search_hour1 + hour), (search_hour1 + hour) % 24);
-                    search_hour0 = (search_hour0 + hour) % 24;
-                    search_hour1 = (search_hour1 + hour) % 24;
-                }
-            }
-            times.push(hour);
-            // console.log(JSON.stringify(hour_forecast.FCTTIME.pretty));
-            var icon = get_icon_from_url(weather_hourly.hourly_forecast[idx].icon_url);
-            var icon_id = icon_name_to_key(icon);
-            icon_ids.push(icon_id);
-            temp_strs.push(parseInt(weather_hourly.hourly_forecast[idx].temp.english).toFixed(0) + '\u00B0');
-        }
-        // console.log('a', idx, hour, search_hour0, search_hour1);
+    var offset;
+    offset = weather_hourly.offset
+    // current time
+    hour = epoch_seconds_to_hour(weather_hourly.currently.time, offset).toFixed(0);
+    times.push(hour);
+    var icon = weather_hourly.currently.icon;
+    var icon_id = icon_name_to_key(icon);
+    icon_ids.push(icon_id);
+    var temp_str = weather_hourly.currently.temperature.toFixed(0) + '\u00B0';
+    temp_strs.push(temp_str);
+    if (weather_forecast_rel_not_abs) {
+        search_hour0 = (search_hour0 + hour) % 24;
+        search_hour1 = (search_hour1 + hour) % 24;
+    }
+    // 2 future times
+    weather_hourly.hourly.data.forEach(function (hour_forecast, idx, arr) {
+        if (idx === 0 || idx === 1 ) {
+            ; // do nothing, look farther ahead
+        } else {
+            hour = epoch_seconds_to_hour(hour_forecast.time, offset);
+            if (hour === search_hour0 || hour === search_hour1) {
+                times.push(hour);
+	        var icon = hour_forecast.icon;
+                var icon_id = icon_name_to_key(icon);
+                icon_ids.push(icon_id);
+                var temp_str = hour_forecast.temperature.toFixed(0) + '\u00B0';
+                temp_strs.push(temp_str);
+            }       	
+        }       	
     });
     pebble_response.icons = icon_ids.slice(0, 3);
-    // console.log(JSON.stringify(pebble_response.icons));
-    pebble_response.times = times;
-    // console.log(JSON.stringify(pebble_response.times));
+    pebble_response.times = times.slice(0, 3);
     pebble_response.temps = temp_strs.slice(0, 3);
-    // console.log(JSON.stringify(pebble_response.temps));
     send_weather_to_pebble();
 }
 
@@ -308,7 +336,7 @@ function fetch_weather() {
         timeout: 15000
     };
     function locationSuccess(pos) {
-        // console.log('location success');
+        console.log('location success');
         var latitude = pos.coords.latitude;
         var longitude = pos.coords.longitude;
         fetch_weather_json(latitude, longitude, process_weather_and_send_to_pebble);
@@ -319,6 +347,10 @@ function fetch_weather() {
     }
     navigator.geolocation.getCurrentPosition(locationSuccess, locationError,
                                              locationOptions);
+}
+
+function epoch_seconds_to_hour(epoch_seconds, offset) {
+    return ((epoch_seconds / 3600) + offset) % 24;
 }
 
 // Listen for when an AppMessage is received
