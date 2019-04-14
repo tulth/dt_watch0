@@ -93,6 +93,7 @@ static GBitmap *weather_snow_bitmap;
 static GBitmap *weather_sunny_bitmap;
 static GBitmap *weather_tstorms_bitmap;
 static GBitmap *weather_unknown_bitmap;
+static GBitmap *weather_wind_bitmap;
 
 // module variables
 static ClaySettings settings;
@@ -146,6 +147,7 @@ static bool s_jsready = false;
 #define WEATHER_ICON_ID_sunny                37
 #define WEATHER_ICON_ID_tstorms              38
 #define WEATHER_ICON_ID_unknown              39
+#define WEATHER_ICON_ID_wind                 40
 
 GBitmap *map_weather_id_to_bitmap(int fct) {
   switch (fct) {
@@ -188,6 +190,7 @@ GBitmap *map_weather_id_to_bitmap(int fct) {
   case WEATHER_ICON_ID_sunny:             return weather_sunny_bitmap;
   case WEATHER_ICON_ID_tstorms:           return weather_tstorms_bitmap;
   case WEATHER_ICON_ID_unknown:           return weather_unknown_bitmap;
+  case WEATHER_ICON_ID_wind:              return weather_wind_bitmap;
   default:                                return weather_unknown_bitmap;
   }
 }
@@ -632,6 +635,7 @@ static void prv_init(void) {
   weather_sunny_bitmap             = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_ICON_sunny);
   weather_tstorms_bitmap           = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_ICON_tstorms);
   weather_unknown_bitmap           = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_ICON_unknown);
+  weather_wind_bitmap              = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_ICON_wind);
 
   s_window = window_create();
   window_set_window_handlers(s_window, (WindowHandlers) {

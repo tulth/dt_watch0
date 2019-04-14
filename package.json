@@ -269,6 +269,11 @@
                     "type": "bitmap",
                     "name": "WEATHER_ICON_unknown",
                     "file": "weather/png/dt/unknown.png"
+                },
+                {
+                    "type": "bitmap",
+                    "name": "WEATHER_ICON_wind",
+                    "file": "weather/png/dt/wind.png"
                 }
             ]
         }

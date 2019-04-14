@@ -155,7 +155,7 @@ function icon_name_to_key(icon_name) {
     case "sleet":
         return 35;
     case "wind":
-        return 39;
+        return 40;
     case "fog":
         return 9;
     case "cloudy":

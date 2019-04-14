@@ -1,0 +1,18 @@
+<svg height="100" width="100" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g style="stroke-width:9.33333" >
+    <path d='M 10,30
+             h 45
+             a 8,8, 0 1,0 -5.657, -13.657
+             M 10,50
+             h 70
+             a 10,10, 0 1,0 -7.07, -17.07
+             M 10,70
+             h 60
+             a 9,9, 0 1,1 -6.364, +15.364
+             '
+          stroke="black" stroke-width="7" fill-opacity="0" stroke-linecap="round" />
+  </g>
+  <!-- a 7,7, 0 1,0 -4.95, -11.95 -->
+  <!-- a 8,8, 0 1,0 -5.657, -13.657 -->
+  <!-- a 10,10, 0 1,0 -7.07, -17.07 -->
+</svg>
